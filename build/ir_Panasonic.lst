@@ -1,0 +1,406 @@
+ARM GAS  /tmp/ccoAIGO0.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_Panasonic.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendPanasonic,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendPanasonic
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendPanasonic:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_Panasonic.c"
+   1:Src/irremote/ir_Panasonic.c **** #include "IRremote.h"
+   2:Src/irremote/ir_Panasonic.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_Panasonic.c **** 
+   4:Src/irremote/ir_Panasonic.c **** //==============================================================================
+   5:Src/irremote/ir_Panasonic.c **** //       PPPP    AAA   N   N   AAA    SSSS   OOO   N   N  IIIII   CCCC
+   6:Src/irremote/ir_Panasonic.c **** //       P   P  A   A  NN  N  A   A  S      O   O  NN  N    I    C
+   7:Src/irremote/ir_Panasonic.c **** //       PPPP   AAAAA  N N N  AAAAA   SSS   O   O  N N N    I    C
+   8:Src/irremote/ir_Panasonic.c **** //       P      A   A  N  NN  A   A      S  O   O  N  NN    I    C
+   9:Src/irremote/ir_Panasonic.c **** //       P      A   A  N   N  A   A  SSSS    OOO   N   N  IIIII   CCCC
+  10:Src/irremote/ir_Panasonic.c **** //==============================================================================
+  11:Src/irremote/ir_Panasonic.c **** 
+  12:Src/irremote/ir_Panasonic.c **** #define PANASONIC_BITS          48
+  13:Src/irremote/ir_Panasonic.c **** #define PANASONIC_HDR_MARK    3502
+  14:Src/irremote/ir_Panasonic.c **** #define PANASONIC_HDR_SPACE   1750
+  15:Src/irremote/ir_Panasonic.c **** #define PANASONIC_BIT_MARK     502
+  16:Src/irremote/ir_Panasonic.c **** #define PANASONIC_ONE_SPACE   1244
+  17:Src/irremote/ir_Panasonic.c **** #define PANASONIC_ZERO_SPACE   400
+  18:Src/irremote/ir_Panasonic.c **** 
+  19:Src/irremote/ir_Panasonic.c **** //+=============================================================================
+  20:Src/irremote/ir_Panasonic.c **** #if SEND_PANASONIC
+  21:Src/irremote/ir_Panasonic.c **** void  sendPanasonic (unsigned int address,  unsigned long data)
+  22:Src/irremote/ir_Panasonic.c **** {
+  26              		.loc 1 22 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 70B5     		push	{r4, r5, r6, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 4, -16
+  35              		.cfi_offset 5, -12
+  36              		.cfi_offset 6, -8
+ARM GAS  /tmp/ccoAIGO0.s 			page 2
+
+
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39 0004 0E46     		mov	r6, r1
+  23:Src/irremote/ir_Panasonic.c **** 	// Set IR carrier frequency
+  24:Src/irremote/ir_Panasonic.c ****     irsend_enableIROut(35);
+  40              		.loc 1 24 0
+  41 0006 2320     		movs	r0, #35
+  42              	.LVL1:
+  43 0008 FFF7FEFF 		bl	irsend_enableIROut
+  44              	.LVL2:
+  25:Src/irremote/ir_Panasonic.c **** 
+  26:Src/irremote/ir_Panasonic.c **** 	// Header
+  27:Src/irremote/ir_Panasonic.c ****     irsend_mark(PANASONIC_HDR_MARK);
+  45              		.loc 1 27 0
+  46 000c 40F6AE50 		movw	r0, #3502
+  47 0010 FFF7FEFF 		bl	irsend_mark
+  48              	.LVL3:
+  28:Src/irremote/ir_Panasonic.c ****     irsend_space(PANASONIC_HDR_SPACE);
+  49              		.loc 1 28 0
+  50 0014 40F2D660 		movw	r0, #1750
+  51 0018 FFF7FEFF 		bl	irsend_space
+  52              	.LVL4:
+  29:Src/irremote/ir_Panasonic.c **** 
+  30:Src/irremote/ir_Panasonic.c **** 	// Address
+  31:Src/irremote/ir_Panasonic.c ****     unsigned long  mask;
+  32:Src/irremote/ir_Panasonic.c ****     for (mask = 1UL << (16 - 1);  mask;  mask >>= 1) {
+  53              		.loc 1 32 0
+  54 001c 4FF40044 		mov	r4, #32768
+  55 0020 04E0     		b	.L2
+  56              	.LVL5:
+  57              	.L3:
+  33:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  34:Src/irremote/ir_Panasonic.c ****         if (address & mask)  irsend_space(PANASONIC_ONE_SPACE) ;
+  35:Src/irremote/ir_Panasonic.c ****         else                 irsend_space(PANASONIC_ZERO_SPACE) ;
+  58              		.loc 1 35 0
+  59 0022 4FF4C870 		mov	r0, #400
+  60 0026 FFF7FEFF 		bl	irsend_space
+  61              	.LVL6:
+  62              	.L4:
+  32:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  63              		.loc 1 32 0 discriminator 2
+  64 002a 6408     		lsrs	r4, r4, #1
+  65              	.LVL7:
+  66              	.L2:
+  32:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  67              		.loc 1 32 0 is_stmt 0 discriminator 1
+  68 002c 54B1     		cbz	r4, .L11
+  33:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  69              		.loc 1 33 0 is_stmt 1
+  70 002e 4FF4FB70 		mov	r0, #502
+  71 0032 FFF7FEFF 		bl	irsend_mark
+  72              	.LVL8:
+  34:Src/irremote/ir_Panasonic.c ****         else                 irsend_space(PANASONIC_ZERO_SPACE) ;
+  73              		.loc 1 34 0
+  74 0036 2C42     		tst	r4, r5
+  75 0038 F3D0     		beq	.L3
+  34:Src/irremote/ir_Panasonic.c ****         else                 irsend_space(PANASONIC_ZERO_SPACE) ;
+ARM GAS  /tmp/ccoAIGO0.s 			page 3
+
+
+  76              		.loc 1 34 0 is_stmt 0 discriminator 1
+  77 003a 40F2DC40 		movw	r0, #1244
+  78 003e FFF7FEFF 		bl	irsend_space
+  79              	.LVL9:
+  80 0042 F2E7     		b	.L4
+  81              	.L11:
+  82 0044 4FF00044 		mov	r4, #-2147483648
+  83              	.LVL10:
+  84 0048 04E0     		b	.L6
+  85              	.LVL11:
+  86              	.L7:
+  36:Src/irremote/ir_Panasonic.c ****     }
+  37:Src/irremote/ir_Panasonic.c **** 
+  38:Src/irremote/ir_Panasonic.c **** 	// Data
+  39:Src/irremote/ir_Panasonic.c ****     for (mask = 1UL << (32 - 1);  mask;  mask >>= 1) {
+  40:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  41:Src/irremote/ir_Panasonic.c ****         if (data & mask)  irsend_space(PANASONIC_ONE_SPACE) ;
+  42:Src/irremote/ir_Panasonic.c ****         else              irsend_space(PANASONIC_ZERO_SPACE) ;
+  87              		.loc 1 42 0 is_stmt 1
+  88 004a 4FF4C870 		mov	r0, #400
+  89 004e FFF7FEFF 		bl	irsend_space
+  90              	.LVL12:
+  91              	.L8:
+  39:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  92              		.loc 1 39 0 discriminator 2
+  93 0052 6408     		lsrs	r4, r4, #1
+  94              	.LVL13:
+  95              	.L6:
+  39:Src/irremote/ir_Panasonic.c ****         irsend_mark(PANASONIC_BIT_MARK);
+  96              		.loc 1 39 0 is_stmt 0 discriminator 1
+  97 0054 54B1     		cbz	r4, .L12
+  40:Src/irremote/ir_Panasonic.c ****         if (data & mask)  irsend_space(PANASONIC_ONE_SPACE) ;
+  98              		.loc 1 40 0 is_stmt 1
+  99 0056 4FF4FB70 		mov	r0, #502
+ 100 005a FFF7FEFF 		bl	irsend_mark
+ 101              	.LVL14:
+  41:Src/irremote/ir_Panasonic.c ****         else              irsend_space(PANASONIC_ZERO_SPACE) ;
+ 102              		.loc 1 41 0
+ 103 005e 3442     		tst	r4, r6
+ 104 0060 F3D0     		beq	.L7
+  41:Src/irremote/ir_Panasonic.c ****         else              irsend_space(PANASONIC_ZERO_SPACE) ;
+ 105              		.loc 1 41 0 is_stmt 0 discriminator 1
+ 106 0062 40F2DC40 		movw	r0, #1244
+ 107 0066 FFF7FEFF 		bl	irsend_space
+ 108              	.LVL15:
+ 109 006a F2E7     		b	.L8
+ 110              	.L12:
+  43:Src/irremote/ir_Panasonic.c ****     }
+  44:Src/irremote/ir_Panasonic.c **** 
+  45:Src/irremote/ir_Panasonic.c **** 	// Footer
+  46:Src/irremote/ir_Panasonic.c ****     irsend_mark(PANASONIC_BIT_MARK);
+ 111              		.loc 1 46 0 is_stmt 1
+ 112 006c 4FF4FB70 		mov	r0, #502
+ 113 0070 FFF7FEFF 		bl	irsend_mark
+ 114              	.LVL16:
+  47:Src/irremote/ir_Panasonic.c ****     irsend_space(0);  // Always end with the LED off
+ 115              		.loc 1 47 0
+ARM GAS  /tmp/ccoAIGO0.s 			page 4
+
+
+ 116 0074 0020     		movs	r0, #0
+ 117 0076 FFF7FEFF 		bl	irsend_space
+ 118              	.LVL17:
+ 119 007a 70BD     		pop	{r4, r5, r6, pc}
+ 120              		.cfi_endproc
+ 121              	.LFE64:
+ 123              		.section	.text.decodePanasonic,"ax",%progbits
+ 124              		.align	1
+ 125              		.global	decodePanasonic
+ 126              		.syntax unified
+ 127              		.thumb
+ 128              		.thumb_func
+ 129              		.fpu softvfp
+ 131              	decodePanasonic:
+ 132              	.LFB65:
+  48:Src/irremote/ir_Panasonic.c **** }
+  49:Src/irremote/ir_Panasonic.c **** #endif
+  50:Src/irremote/ir_Panasonic.c **** 
+  51:Src/irremote/ir_Panasonic.c **** //+=============================================================================
+  52:Src/irremote/ir_Panasonic.c **** #if DECODE_PANASONIC
+  53:Src/irremote/ir_Panasonic.c **** unsigned char  decodePanasonic (struct decode_results *results)
+  54:Src/irremote/ir_Panasonic.c **** {
+ 133              		.loc 1 54 0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137              	.LVL18:
+ 138 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 139              	.LCFI1:
+ 140              		.cfi_def_cfa_offset 32
+ 141              		.cfi_offset 3, -32
+ 142              		.cfi_offset 4, -28
+ 143              		.cfi_offset 5, -24
+ 144              		.cfi_offset 6, -20
+ 145              		.cfi_offset 7, -16
+ 146              		.cfi_offset 8, -12
+ 147              		.cfi_offset 9, -8
+ 148              		.cfi_offset 14, -4
+ 149 0004 8046     		mov	r8, r0
+ 150              	.LVL19:
+  55:Src/irremote/ir_Panasonic.c ****     unsigned long long  data   = 0;
+  56:Src/irremote/ir_Panasonic.c ****     int                 offset = 1;
+  57:Src/irremote/ir_Panasonic.c **** 
+  58:Src/irremote/ir_Panasonic.c ****     if (!MATCH_MARK(results->rawbuf[offset++], PANASONIC_HDR_MARK ))  return FALSE ;
+ 151              		.loc 1 58 0
+ 152 0006 0369     		ldr	r3, [r0, #16]
+ 153              	.LVL20:
+ 154 0008 5868     		ldr	r0, [r3, #4]
+ 155              	.LVL21:
+ 156 000a 40F6AE51 		movw	r1, #3502
+ 157 000e FFF7FEFF 		bl	MATCH_MARK
+ 158              	.LVL22:
+ 159 0012 10B9     		cbnz	r0, .L24
+ 160 0014 0020     		movs	r0, #0
+ 161 0016 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 162              	.LVL23:
+ 163              	.L24:
+ARM GAS  /tmp/ccoAIGO0.s 			page 5
+
+
+  59:Src/irremote/ir_Panasonic.c ****     if (!MATCH_MARK(results->rawbuf[offset++], PANASONIC_HDR_SPACE))  return FALSE ;
+ 164              		.loc 1 59 0
+ 165 001a D8F81030 		ldr	r3, [r8, #16]
+ 166              	.LVL24:
+ 167 001e 9868     		ldr	r0, [r3, #8]
+ 168 0020 40F2D661 		movw	r1, #1750
+ 169 0024 FFF7FEFF 		bl	MATCH_MARK
+ 170              	.LVL25:
+ 171 0028 0028     		cmp	r0, #0
+ 172 002a 3AD0     		beq	.L20
+ 173 002c 0027     		movs	r7, #0
+ 174 002e 0326     		movs	r6, #3
+ 175 0030 0024     		movs	r4, #0
+ 176 0032 0025     		movs	r5, #0
+ 177 0034 05E0     		b	.L15
+ 178              	.LVL26:
+ 179              	.L26:
+ 180              	.LBB2:
+  60:Src/irremote/ir_Panasonic.c **** 
+  61:Src/irremote/ir_Panasonic.c ****     // decode address
+  62:Src/irremote/ir_Panasonic.c ****     for (int i = 0;  i < PANASONIC_BITS;  i++) {
+  63:Src/irremote/ir_Panasonic.c ****         if (!MATCH_MARK(results->rawbuf[offset++], PANASONIC_BIT_MARK))  return FALSE ;
+  64:Src/irremote/ir_Panasonic.c **** 
+  65:Src/irremote/ir_Panasonic.c ****         if      (MATCH_SPACE(results->rawbuf[offset],PANASONIC_ONE_SPACE ))  data = (data << 1) | 1
+ 181              		.loc 1 65 0 discriminator 1
+ 182 0036 2419     		adds	r4, r4, r4
+ 183              	.LVL27:
+ 184 0038 6D41     		adcs	r5, r5, r5
+ 185 003a 44F00104 		orr	r4, r4, #1
+ 186              	.LVL28:
+ 187              	.L17:
+  66:Src/irremote/ir_Panasonic.c ****         else if (MATCH_SPACE(results->rawbuf[offset],PANASONIC_ZERO_SPACE))  data = (data << 1) | 0
+  67:Src/irremote/ir_Panasonic.c ****         else                                                                 return FALSE ;
+  68:Src/irremote/ir_Panasonic.c ****         offset++;
+ 188              		.loc 1 68 0 discriminator 2
+ 189 003e 0236     		adds	r6, r6, #2
+ 190              	.LVL29:
+  62:Src/irremote/ir_Panasonic.c ****         if (!MATCH_MARK(results->rawbuf[offset++], PANASONIC_BIT_MARK))  return FALSE ;
+ 191              		.loc 1 62 0 discriminator 2
+ 192 0040 0137     		adds	r7, r7, #1
+ 193              	.LVL30:
+ 194              	.L15:
+  62:Src/irremote/ir_Panasonic.c ****         if (!MATCH_MARK(results->rawbuf[offset++], PANASONIC_BIT_MARK))  return FALSE ;
+ 195              		.loc 1 62 0 is_stmt 0 discriminator 1
+ 196 0042 2F2F     		cmp	r7, #47
+ 197 0044 20DC     		bgt	.L25
+  63:Src/irremote/ir_Panasonic.c **** 
+ 198              		.loc 1 63 0 is_stmt 1
+ 199 0046 D8F81030 		ldr	r3, [r8, #16]
+ 200 004a 06F10109 		add	r9, r6, #1
+ 201              	.LVL31:
+ 202 004e 53F82600 		ldr	r0, [r3, r6, lsl #2]
+ 203 0052 4FF4FB71 		mov	r1, #502
+ 204 0056 FFF7FEFF 		bl	MATCH_MARK
+ 205              	.LVL32:
+ 206 005a 28B3     		cbz	r0, .L21
+  65:Src/irremote/ir_Panasonic.c ****         else if (MATCH_SPACE(results->rawbuf[offset],PANASONIC_ZERO_SPACE))  data = (data << 1) | 0
+ARM GAS  /tmp/ccoAIGO0.s 			page 6
+
+
+ 207              		.loc 1 65 0
+ 208 005c D8F81030 		ldr	r3, [r8, #16]
+ 209 0060 53F82900 		ldr	r0, [r3, r9, lsl #2]
+ 210 0064 40F2DC41 		movw	r1, #1244
+ 211 0068 FFF7FEFF 		bl	MATCH_SPACE
+ 212              	.LVL33:
+ 213 006c 0028     		cmp	r0, #0
+ 214 006e E2D1     		bne	.L26
+  66:Src/irremote/ir_Panasonic.c ****         else                                                                 return FALSE ;
+ 215              		.loc 1 66 0
+ 216 0070 D8F81030 		ldr	r3, [r8, #16]
+ 217 0074 53F82900 		ldr	r0, [r3, r9, lsl #2]
+ 218 0078 4FF4C871 		mov	r1, #400
+ 219 007c FFF7FEFF 		bl	MATCH_SPACE
+ 220              	.LVL34:
+ 221 0080 A8B1     		cbz	r0, .L22
+  66:Src/irremote/ir_Panasonic.c ****         else                                                                 return FALSE ;
+ 222              		.loc 1 66 0 is_stmt 0 discriminator 1
+ 223 0082 2419     		adds	r4, r4, r4
+ 224              	.LVL35:
+ 225 0084 6D41     		adcs	r5, r5, r5
+ 226 0086 DAE7     		b	.L17
+ 227              	.LVL36:
+ 228              	.L25:
+ 229              	.LBE2:
+  69:Src/irremote/ir_Panasonic.c ****     }
+  70:Src/irremote/ir_Panasonic.c **** 
+  71:Src/irremote/ir_Panasonic.c ****     results->value       = (unsigned long)data;
+ 230              		.loc 1 71 0 is_stmt 1
+ 231 0088 C8F80840 		str	r4, [r8, #8]
+  72:Src/irremote/ir_Panasonic.c ****     results->address     = (unsigned int)(data >> 32);
+ 232              		.loc 1 72 0
+ 233 008c C8F80450 		str	r5, [r8, #4]
+  73:Src/irremote/ir_Panasonic.c ****     results->decode_type = PANASONIC;
+ 234              		.loc 1 73 0
+ 235 0090 0523     		movs	r3, #5
+ 236 0092 88F80030 		strb	r3, [r8]
+  74:Src/irremote/ir_Panasonic.c ****     results->bits        = PANASONIC_BITS;
+ 237              		.loc 1 74 0
+ 238 0096 3023     		movs	r3, #48
+ 239 0098 C8F80C30 		str	r3, [r8, #12]
+  75:Src/irremote/ir_Panasonic.c **** 
+  76:Src/irremote/ir_Panasonic.c ****     return TRUE;
+ 240              		.loc 1 76 0
+ 241 009c 0120     		movs	r0, #1
+ 242 009e BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 243              	.LVL37:
+ 244              	.L20:
+  59:Src/irremote/ir_Panasonic.c **** 
+ 245              		.loc 1 59 0
+ 246 00a2 0020     		movs	r0, #0
+ 247 00a4 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 248              	.LVL38:
+ 249              	.L21:
+ 250              	.LBB3:
+  63:Src/irremote/ir_Panasonic.c **** 
+ 251              		.loc 1 63 0
+ARM GAS  /tmp/ccoAIGO0.s 			page 7
+
+
+ 252 00a8 0020     		movs	r0, #0
+ 253 00aa BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 254              	.LVL39:
+ 255              	.L22:
+  67:Src/irremote/ir_Panasonic.c ****         offset++;
+ 256              		.loc 1 67 0
+ 257 00ae 0020     		movs	r0, #0
+ 258              	.LBE3:
+  77:Src/irremote/ir_Panasonic.c **** }
+ 259              		.loc 1 77 0
+ 260 00b0 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 261              		.cfi_endproc
+ 262              	.LFE65:
+ 264              		.text
+ 265              	.Letext0:
+ 266              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 267              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 268              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 269              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 270              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 271              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 272              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 273              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 274              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 275              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 276              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/ccoAIGO0.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_Panasonic.c
+     /tmp/ccoAIGO0.s:16     .text.sendPanasonic:0000000000000000 $t
+     /tmp/ccoAIGO0.s:23     .text.sendPanasonic:0000000000000000 sendPanasonic
+     /tmp/ccoAIGO0.s:124    .text.decodePanasonic:0000000000000000 $t
+     /tmp/ccoAIGO0.s:131    .text.decodePanasonic:0000000000000000 decodePanasonic
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE

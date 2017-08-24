@@ -1,0 +1,489 @@
+ARM GAS  /tmp/ccMradDz.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_JVC.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendJVC,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendJVC
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendJVC:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_JVC.c"
+   1:Src/irremote/ir_JVC.c **** #include "IRremote.h"
+   2:Src/irremote/ir_JVC.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_JVC.c **** 
+   4:Src/irremote/ir_JVC.c **** //==============================================================================
+   5:Src/irremote/ir_JVC.c **** //                             JJJJJ  V   V   CCCC
+   6:Src/irremote/ir_JVC.c **** //                               J    V   V  C
+   7:Src/irremote/ir_JVC.c **** //                               J     V V   C
+   8:Src/irremote/ir_JVC.c **** //                             J J     V V   C
+   9:Src/irremote/ir_JVC.c **** //                              J       V     CCCC
+  10:Src/irremote/ir_JVC.c **** //==============================================================================
+  11:Src/irremote/ir_JVC.c **** 
+  12:Src/irremote/ir_JVC.c **** #define JVC_BITS           16
+  13:Src/irremote/ir_JVC.c **** #define JVC_HDR_MARK     8000
+  14:Src/irremote/ir_JVC.c **** #define JVC_HDR_SPACE    4000
+  15:Src/irremote/ir_JVC.c **** #define JVC_BIT_MARK      600
+  16:Src/irremote/ir_JVC.c **** #define JVC_ONE_SPACE    1600
+  17:Src/irremote/ir_JVC.c **** #define JVC_ZERO_SPACE    550
+  18:Src/irremote/ir_JVC.c **** #define JVC_RPT_LENGTH  60000
+  19:Src/irremote/ir_JVC.c **** 
+  20:Src/irremote/ir_JVC.c **** //+=============================================================================
+  21:Src/irremote/ir_JVC.c **** // JVC does NOT repeat by sending a separate code (like NEC does).
+  22:Src/irremote/ir_JVC.c **** // The JVC protocol repeats by skipping the header.
+  23:Src/irremote/ir_JVC.c **** // To send a JVC repeat signal, send the original code value
+  24:Src/irremote/ir_JVC.c **** //   and set 'repeat' to true
+  25:Src/irremote/ir_JVC.c **** //
+  26:Src/irremote/ir_JVC.c **** #if SEND_JVC
+  27:Src/irremote/ir_JVC.c **** unsigned char  sendJVC (unsigned long data,  int nbits,  unsigned char repeat)
+  28:Src/irremote/ir_JVC.c **** {
+  26              		.loc 1 28 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+ARM GAS  /tmp/ccMradDz.s 			page 2
+
+
+  31 0000 70B5     		push	{r4, r5, r6, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 4, -16
+  35              		.cfi_offset 5, -12
+  36              		.cfi_offset 6, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39 0004 0C46     		mov	r4, r1
+  40 0006 1646     		mov	r6, r2
+  29:Src/irremote/ir_JVC.c **** 	// Set IR carrier frequency
+  30:Src/irremote/ir_JVC.c ****     irsend_enableIROut(38);
+  41              		.loc 1 30 0
+  42 0008 2620     		movs	r0, #38
+  43              	.LVL1:
+  44 000a FFF7FEFF 		bl	irsend_enableIROut
+  45              	.LVL2:
+  31:Src/irremote/ir_JVC.c **** 
+  32:Src/irremote/ir_JVC.c **** 	// Only send the Header if this is NOT a repeat command
+  33:Src/irremote/ir_JVC.c **** 	if (!repeat){
+  46              		.loc 1 33 0
+  47 000e 1EB1     		cbz	r6, .L8
+  48              	.L2:
+  34:Src/irremote/ir_JVC.c ****         irsend_mark(JVC_HDR_MARK);
+  35:Src/irremote/ir_JVC.c ****         irsend_space(JVC_HDR_SPACE);
+  36:Src/irremote/ir_JVC.c **** 	}
+  37:Src/irremote/ir_JVC.c **** 
+  38:Src/irremote/ir_JVC.c **** 	// Data
+  39:Src/irremote/ir_JVC.c ****     unsigned long  mask;
+  40:Src/irremote/ir_JVC.c ****     for (mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+  49              		.loc 1 40 0
+  50 0010 631E     		subs	r3, r4, #1
+  51 0012 0124     		movs	r4, #1
+  52              	.LVL3:
+  53 0014 9C40     		lsls	r4, r4, r3
+  54              	.LVL4:
+  55 0016 11E0     		b	.L3
+  56              	.LVL5:
+  57              	.L8:
+  34:Src/irremote/ir_JVC.c ****         irsend_mark(JVC_HDR_MARK);
+  58              		.loc 1 34 0
+  59 0018 4FF4FA50 		mov	r0, #8000
+  60 001c FFF7FEFF 		bl	irsend_mark
+  61              	.LVL6:
+  35:Src/irremote/ir_JVC.c **** 	}
+  62              		.loc 1 35 0
+  63 0020 4FF47A60 		mov	r0, #4000
+  64 0024 FFF7FEFF 		bl	irsend_space
+  65              	.LVL7:
+  66 0028 F2E7     		b	.L2
+  67              	.LVL8:
+  68              	.L4:
+  41:Src/irremote/ir_JVC.c **** 		if (data & mask) {
+  42:Src/irremote/ir_JVC.c ****             irsend_mark(JVC_BIT_MARK);
+  43:Src/irremote/ir_JVC.c ****             irsend_space(JVC_ONE_SPACE);
+  44:Src/irremote/ir_JVC.c **** 		} else {
+  45:Src/irremote/ir_JVC.c ****             irsend_mark(JVC_BIT_MARK);
+ARM GAS  /tmp/ccMradDz.s 			page 3
+
+
+  69              		.loc 1 45 0
+  70 002a 4FF41670 		mov	r0, #600
+  71 002e FFF7FEFF 		bl	irsend_mark
+  72              	.LVL9:
+  46:Src/irremote/ir_JVC.c ****             irsend_space(JVC_ZERO_SPACE);
+  73              		.loc 1 46 0
+  74 0032 40F22620 		movw	r0, #550
+  75 0036 FFF7FEFF 		bl	irsend_space
+  76              	.LVL10:
+  77              	.L5:
+  40:Src/irremote/ir_JVC.c **** 		if (data & mask) {
+  78              		.loc 1 40 0 discriminator 2
+  79 003a 6408     		lsrs	r4, r4, #1
+  80              	.LVL11:
+  81              	.L3:
+  40:Src/irremote/ir_JVC.c **** 		if (data & mask) {
+  82              		.loc 1 40 0 is_stmt 0 discriminator 1
+  83 003c 54B1     		cbz	r4, .L9
+  41:Src/irremote/ir_JVC.c **** 		if (data & mask) {
+  84              		.loc 1 41 0 is_stmt 1
+  85 003e 2C42     		tst	r4, r5
+  86 0040 F3D0     		beq	.L4
+  42:Src/irremote/ir_JVC.c ****             irsend_space(JVC_ONE_SPACE);
+  87              		.loc 1 42 0
+  88 0042 4FF41670 		mov	r0, #600
+  89 0046 FFF7FEFF 		bl	irsend_mark
+  90              	.LVL12:
+  43:Src/irremote/ir_JVC.c **** 		} else {
+  91              		.loc 1 43 0
+  92 004a 4FF4C860 		mov	r0, #1600
+  93 004e FFF7FEFF 		bl	irsend_space
+  94              	.LVL13:
+  95 0052 F2E7     		b	.L5
+  96              	.L9:
+  47:Src/irremote/ir_JVC.c **** 		}
+  48:Src/irremote/ir_JVC.c **** 	}
+  49:Src/irremote/ir_JVC.c **** 
+  50:Src/irremote/ir_JVC.c **** 	// Footer
+  51:Src/irremote/ir_JVC.c ****     irsend_mark(JVC_BIT_MARK);
+  97              		.loc 1 51 0
+  98 0054 4FF41670 		mov	r0, #600
+  99 0058 FFF7FEFF 		bl	irsend_mark
+ 100              	.LVL14:
+  52:Src/irremote/ir_JVC.c ****     irsend_space(0);  // Always end with the LED off
+ 101              		.loc 1 52 0
+ 102 005c 0020     		movs	r0, #0
+ 103 005e FFF7FEFF 		bl	irsend_space
+ 104              	.LVL15:
+  53:Src/irremote/ir_JVC.c **** }
+ 105              		.loc 1 53 0
+ 106 0062 70BD     		pop	{r4, r5, r6, pc}
+ 107              		.cfi_endproc
+ 108              	.LFE64:
+ 110              		.section	.text.decodeJVC,"ax",%progbits
+ 111              		.align	1
+ 112              		.global	decodeJVC
+ 113              		.syntax unified
+ARM GAS  /tmp/ccMradDz.s 			page 4
+
+
+ 114              		.thumb
+ 115              		.thumb_func
+ 116              		.fpu softvfp
+ 118              	decodeJVC:
+ 119              	.LFB65:
+  54:Src/irremote/ir_JVC.c **** #endif
+  55:Src/irremote/ir_JVC.c **** 
+  56:Src/irremote/ir_JVC.c **** //+=============================================================================
+  57:Src/irremote/ir_JVC.c **** #if DECODE_JVC
+  58:Src/irremote/ir_JVC.c **** unsigned char  decodeJVC (struct decode_results *results)
+  59:Src/irremote/ir_JVC.c **** {
+ 120              		.loc 1 59 0
+ 121              		.cfi_startproc
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124              	.LVL16:
+ 125 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 126              	.LCFI1:
+ 127              		.cfi_def_cfa_offset 24
+ 128              		.cfi_offset 4, -24
+ 129              		.cfi_offset 5, -20
+ 130              		.cfi_offset 6, -16
+ 131              		.cfi_offset 7, -12
+ 132              		.cfi_offset 8, -8
+ 133              		.cfi_offset 14, -4
+ 134 0004 0446     		mov	r4, r0
+ 135              	.LVL17:
+  60:Src/irremote/ir_JVC.c **** 	long  data   = 0;
+  61:Src/irremote/ir_JVC.c **** 	int   offset = 1; // Skip first space
+  62:Src/irremote/ir_JVC.c **** 
+  63:Src/irremote/ir_JVC.c **** 	// Check for repeat
+  64:Src/irremote/ir_JVC.c **** 	if (  (irparams.rawlen - 1 == 33)
+ 136              		.loc 1 64 0
+ 137 0006 424B     		ldr	r3, .L27
+ 138 0008 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 139 000a DBB2     		uxtb	r3, r3
+ 140 000c 222B     		cmp	r3, #34
+ 141 000e 0FD0     		beq	.L24
+ 142              	.LVL18:
+ 143              	.L11:
+  65:Src/irremote/ir_JVC.c **** 	    && MATCH_MARK(results->rawbuf[offset], JVC_BIT_MARK)
+  66:Src/irremote/ir_JVC.c **** 	    && MATCH_MARK(results->rawbuf[irparams.rawlen-1], JVC_BIT_MARK)
+  67:Src/irremote/ir_JVC.c **** 	   ) {
+  68:Src/irremote/ir_JVC.c **** 		results->bits        = 0;
+  69:Src/irremote/ir_JVC.c **** 		results->value       = REPEAT;
+  70:Src/irremote/ir_JVC.c **** 		results->decode_type = JVC;
+  71:Src/irremote/ir_JVC.c ****         return TRUE;
+  72:Src/irremote/ir_JVC.c **** 	}
+  73:Src/irremote/ir_JVC.c **** 
+  74:Src/irremote/ir_JVC.c **** 	// Initial mark
+  75:Src/irremote/ir_JVC.c ****     if (!MATCH_MARK(results->rawbuf[offset++], JVC_HDR_MARK))  return FALSE ;
+ 144              		.loc 1 75 0
+ 145 0010 2369     		ldr	r3, [r4, #16]
+ 146              	.LVL19:
+ 147 0012 5868     		ldr	r0, [r3, #4]
+ 148 0014 4FF4FA51 		mov	r1, #8000
+ 149 0018 FFF7FEFF 		bl	MATCH_MARK
+ARM GAS  /tmp/ccMradDz.s 			page 5
+
+
+ 150              	.LVL20:
+ 151 001c 0028     		cmp	r0, #0
+ 152 001e 67D0     		beq	.L17
+  76:Src/irremote/ir_JVC.c **** 
+  77:Src/irremote/ir_JVC.c ****     if (irparams.rawlen < (2 * JVC_BITS) + 1 )  return FALSE ;
+ 153              		.loc 1 77 0
+ 154 0020 3B4B     		ldr	r3, .L27
+ 155 0022 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 156 0024 DBB2     		uxtb	r3, r3
+ 157 0026 202B     		cmp	r3, #32
+ 158 0028 22D8     		bhi	.L25
+ 159 002a 0020     		movs	r0, #0
+ 160 002c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 161              	.LVL21:
+ 162              	.L24:
+  65:Src/irremote/ir_JVC.c **** 	    && MATCH_MARK(results->rawbuf[offset], JVC_BIT_MARK)
+ 163              		.loc 1 65 0
+ 164 0030 0369     		ldr	r3, [r0, #16]
+ 165 0032 5868     		ldr	r0, [r3, #4]
+ 166              	.LVL22:
+ 167 0034 4FF41671 		mov	r1, #600
+ 168 0038 FFF7FEFF 		bl	MATCH_MARK
+ 169              	.LVL23:
+ 170 003c 0028     		cmp	r0, #0
+ 171 003e E7D0     		beq	.L11
+  66:Src/irremote/ir_JVC.c **** 	   ) {
+ 172              		.loc 1 66 0
+ 173 0040 2269     		ldr	r2, [r4, #16]
+ 174 0042 334B     		ldr	r3, .L27
+ 175 0044 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 176 0046 03F18043 		add	r3, r3, #1073741824
+ 177 004a 013B     		subs	r3, r3, #1
+ 178 004c 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ 179 0050 4FF41671 		mov	r1, #600
+ 180 0054 FFF7FEFF 		bl	MATCH_MARK
+ 181              	.LVL24:
+ 182 0058 0028     		cmp	r0, #0
+ 183 005a D9D0     		beq	.L11
+  68:Src/irremote/ir_JVC.c **** 		results->value       = REPEAT;
+ 184              		.loc 1 68 0
+ 185 005c 0023     		movs	r3, #0
+ 186 005e E360     		str	r3, [r4, #12]
+  69:Src/irremote/ir_JVC.c **** 		results->decode_type = JVC;
+ 187              		.loc 1 69 0
+ 188 0060 4FF0FF33 		mov	r3, #-1
+ 189 0064 A360     		str	r3, [r4, #8]
+  70:Src/irremote/ir_JVC.c ****         return TRUE;
+ 190              		.loc 1 70 0
+ 191 0066 0623     		movs	r3, #6
+ 192 0068 2370     		strb	r3, [r4]
+  71:Src/irremote/ir_JVC.c **** 	}
+ 193              		.loc 1 71 0
+ 194 006a 0120     		movs	r0, #1
+ 195 006c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 196              	.LVL25:
+ 197              	.L25:
+  78:Src/irremote/ir_JVC.c **** 
+ARM GAS  /tmp/ccMradDz.s 			page 6
+
+
+  79:Src/irremote/ir_JVC.c **** 	// Initial space
+  80:Src/irremote/ir_JVC.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], JVC_HDR_SPACE))  return FALSE ;
+ 198              		.loc 1 80 0
+ 199 0070 2369     		ldr	r3, [r4, #16]
+ 200              	.LVL26:
+ 201 0072 9868     		ldr	r0, [r3, #8]
+ 202 0074 4FF47A61 		mov	r1, #4000
+ 203 0078 FFF7FEFF 		bl	MATCH_SPACE
+ 204              	.LVL27:
+ 205 007c 0028     		cmp	r0, #0
+ 206 007e 3AD0     		beq	.L19
+ 207 0080 0027     		movs	r7, #0
+ 208 0082 0325     		movs	r5, #3
+ 209 0084 3E46     		mov	r6, r7
+ 210 0086 0AE0     		b	.L13
+ 211              	.LVL28:
+ 212              	.L14:
+ 213              	.LBB2:
+  81:Src/irremote/ir_JVC.c **** 
+  82:Src/irremote/ir_JVC.c **** 	for (int i = 0;  i < JVC_BITS;  i++) {
+  83:Src/irremote/ir_JVC.c ****         if (!MATCH_MARK(results->rawbuf[offset++], JVC_BIT_MARK))  return FALSE ;
+  84:Src/irremote/ir_JVC.c **** 
+  85:Src/irremote/ir_JVC.c **** 		if      (MATCH_SPACE(results->rawbuf[offset], JVC_ONE_SPACE))   data = (data << 1) | 1 ;
+  86:Src/irremote/ir_JVC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], JVC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 214              		.loc 1 86 0
+ 215 0088 2369     		ldr	r3, [r4, #16]
+ 216 008a 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 217 008e 40F22621 		movw	r1, #550
+ 218 0092 FFF7FEFF 		bl	MATCH_SPACE
+ 219              	.LVL29:
+ 220 0096 A0B3     		cbz	r0, .L21
+ 221              		.loc 1 86 0 is_stmt 0 discriminator 1
+ 222 0098 7600     		lsls	r6, r6, #1
+ 223              	.LVL30:
+ 224              	.L15:
+  87:Src/irremote/ir_JVC.c ****         else                                                            return FALSE ;
+  88:Src/irremote/ir_JVC.c **** 		offset++;
+ 225              		.loc 1 88 0 is_stmt 1 discriminator 2
+ 226 009a 0235     		adds	r5, r5, #2
+ 227              	.LVL31:
+  82:Src/irremote/ir_JVC.c ****         if (!MATCH_MARK(results->rawbuf[offset++], JVC_BIT_MARK))  return FALSE ;
+ 228              		.loc 1 82 0 discriminator 2
+ 229 009c 0137     		adds	r7, r7, #1
+ 230              	.LVL32:
+ 231              	.L13:
+  82:Src/irremote/ir_JVC.c ****         if (!MATCH_MARK(results->rawbuf[offset++], JVC_BIT_MARK))  return FALSE ;
+ 232              		.loc 1 82 0 is_stmt 0 discriminator 1
+ 233 009e 0F2F     		cmp	r7, #15
+ 234 00a0 16DC     		bgt	.L26
+  83:Src/irremote/ir_JVC.c **** 
+ 235              		.loc 1 83 0 is_stmt 1
+ 236 00a2 2369     		ldr	r3, [r4, #16]
+ 237 00a4 05F10108 		add	r8, r5, #1
+ 238              	.LVL33:
+ 239 00a8 53F82500 		ldr	r0, [r3, r5, lsl #2]
+ 240 00ac 4FF41671 		mov	r1, #600
+ 241 00b0 FFF7FEFF 		bl	MATCH_MARK
+ARM GAS  /tmp/ccMradDz.s 			page 7
+
+
+ 242              	.LVL34:
+ 243 00b4 10B3     		cbz	r0, .L20
+  85:Src/irremote/ir_JVC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], JVC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 244              		.loc 1 85 0
+ 245 00b6 2369     		ldr	r3, [r4, #16]
+ 246 00b8 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 247 00bc 4FF4C861 		mov	r1, #1600
+ 248 00c0 FFF7FEFF 		bl	MATCH_SPACE
+ 249              	.LVL35:
+ 250 00c4 0028     		cmp	r0, #0
+ 251 00c6 DFD0     		beq	.L14
+  85:Src/irremote/ir_JVC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], JVC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 252              		.loc 1 85 0 is_stmt 0 discriminator 1
+ 253 00c8 7600     		lsls	r6, r6, #1
+ 254              	.LVL36:
+ 255 00ca 46F00106 		orr	r6, r6, #1
+ 256              	.LVL37:
+ 257 00ce E4E7     		b	.L15
+ 258              	.LVL38:
+ 259              	.L26:
+ 260              	.LBE2:
+  89:Src/irremote/ir_JVC.c **** 	}
+  90:Src/irremote/ir_JVC.c **** 
+  91:Src/irremote/ir_JVC.c **** 	// Stop bit
+  92:Src/irremote/ir_JVC.c ****     if (!MATCH_MARK(results->rawbuf[offset], JVC_BIT_MARK))  return FALSE ;
+ 261              		.loc 1 92 0 is_stmt 1
+ 262 00d0 2369     		ldr	r3, [r4, #16]
+ 263 00d2 53F82500 		ldr	r0, [r3, r5, lsl #2]
+ 264 00d6 4FF41671 		mov	r1, #600
+ 265 00da FFF7FEFF 		bl	MATCH_MARK
+ 266              	.LVL39:
+ 267 00de 98B1     		cbz	r0, .L22
+  93:Src/irremote/ir_JVC.c **** 
+  94:Src/irremote/ir_JVC.c **** 	// Success
+  95:Src/irremote/ir_JVC.c **** 	results->bits        = JVC_BITS;
+ 268              		.loc 1 95 0
+ 269 00e0 1023     		movs	r3, #16
+ 270 00e2 E360     		str	r3, [r4, #12]
+  96:Src/irremote/ir_JVC.c **** 	results->value       = data;
+ 271              		.loc 1 96 0
+ 272 00e4 A660     		str	r6, [r4, #8]
+  97:Src/irremote/ir_JVC.c **** 	results->decode_type = JVC;
+ 273              		.loc 1 97 0
+ 274 00e6 0623     		movs	r3, #6
+ 275 00e8 2370     		strb	r3, [r4]
+  98:Src/irremote/ir_JVC.c **** 
+  99:Src/irremote/ir_JVC.c ****     return TRUE;
+ 276              		.loc 1 99 0
+ 277 00ea 0120     		movs	r0, #1
+ 278 00ec BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 279              	.LVL40:
+ 280              	.L17:
+  75:Src/irremote/ir_JVC.c **** 
+ 281              		.loc 1 75 0
+ 282 00f0 0020     		movs	r0, #0
+ 283 00f2 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 284              	.LVL41:
+ARM GAS  /tmp/ccMradDz.s 			page 8
+
+
+ 285              	.L19:
+  80:Src/irremote/ir_JVC.c **** 
+ 286              		.loc 1 80 0
+ 287 00f6 0020     		movs	r0, #0
+ 288 00f8 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 289              	.LVL42:
+ 290              	.L20:
+ 291              	.LBB3:
+  83:Src/irremote/ir_JVC.c **** 
+ 292              		.loc 1 83 0
+ 293 00fc 0020     		movs	r0, #0
+ 294 00fe BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 295              	.LVL43:
+ 296              	.L21:
+  87:Src/irremote/ir_JVC.c **** 		offset++;
+ 297              		.loc 1 87 0
+ 298 0102 0020     		movs	r0, #0
+ 299 0104 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 300              	.LVL44:
+ 301              	.L22:
+ 302              	.LBE3:
+  92:Src/irremote/ir_JVC.c **** 
+ 303              		.loc 1 92 0
+ 304 0108 0020     		movs	r0, #0
+ 100:Src/irremote/ir_JVC.c **** }
+ 305              		.loc 1 100 0
+ 306 010a BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 307              	.LVL45:
+ 308              	.L28:
+ 309 010e 00BF     		.align	2
+ 310              	.L27:
+ 311 0110 00000000 		.word	irparams
+ 312              		.cfi_endproc
+ 313              	.LFE65:
+ 315              		.text
+ 316              	.Letext0:
+ 317              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 318              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 319              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 320              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 321              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 322              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 323              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 324              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 325              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 326              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 327              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/ccMradDz.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_JVC.c
+     /tmp/ccMradDz.s:16     .text.sendJVC:0000000000000000 $t
+     /tmp/ccMradDz.s:23     .text.sendJVC:0000000000000000 sendJVC
+     /tmp/ccMradDz.s:111    .text.decodeJVC:0000000000000000 $t
+     /tmp/ccMradDz.s:118    .text.decodeJVC:0000000000000000 decodeJVC
+     /tmp/ccMradDz.s:311    .text.decodeJVC:0000000000000110 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE
+irparams

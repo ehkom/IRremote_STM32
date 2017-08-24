@@ -1,0 +1,1080 @@
+ARM GAS  /tmp/ccI0BwT5.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_RC5_RC6.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.getRClevel,"ax",%progbits
+  16              		.align	1
+  17              		.global	getRClevel
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	getRClevel:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_RC5_RC6.c"
+   1:Src/irremote/ir_RC5_RC6.c **** #include "IRremote.h"
+   2:Src/irremote/ir_RC5_RC6.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_RC5_RC6.c **** 
+   4:Src/irremote/ir_RC5_RC6.c **** //+=============================================================================
+   5:Src/irremote/ir_RC5_RC6.c **** // Gets one undecoded level at a time from the raw buffer.
+   6:Src/irremote/ir_RC5_RC6.c **** // The RC5/6 decoding is easier if the data is broken into time intervals.
+   7:Src/irremote/ir_RC5_RC6.c **** // E.g. if the buffer has MARK for 2 time intervals and SPACE for 1,
+   8:Src/irremote/ir_RC5_RC6.c **** // successive calls to getRClevel will return MARK, MARK, SPACE.
+   9:Src/irremote/ir_RC5_RC6.c **** // offset and used are updated to keep track of the current position.
+  10:Src/irremote/ir_RC5_RC6.c **** // t1 is the time interval for a single bit in microseconds.
+  11:Src/irremote/ir_RC5_RC6.c **** // Returns -1 for error (measured time interval is not a multiple of t1).
+  12:Src/irremote/ir_RC5_RC6.c **** //
+  13:Src/irremote/ir_RC5_RC6.c **** #if (DECODE_RC5 || DECODE_RC6)
+  14:Src/irremote/ir_RC5_RC6.c **** int  getRClevel (struct decode_results *results,  int *offset,  int *used,  int t1)
+  15:Src/irremote/ir_RC5_RC6.c **** {
+  26              		.loc 1 15 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 32
+  34              		.cfi_offset 3, -32
+  35              		.cfi_offset 4, -28
+  36              		.cfi_offset 5, -24
+  37              		.cfi_offset 6, -20
+  38              		.cfi_offset 7, -16
+  39              		.cfi_offset 8, -12
+  40              		.cfi_offset 9, -8
+  41              		.cfi_offset 14, -4
+  16:Src/irremote/ir_RC5_RC6.c **** 	int  width;
+  17:Src/irremote/ir_RC5_RC6.c **** 	int  val;
+ARM GAS  /tmp/ccI0BwT5.s 			page 2
+
+
+  18:Src/irremote/ir_RC5_RC6.c **** 	int  correction;
+  19:Src/irremote/ir_RC5_RC6.c **** 	int  avail;
+  20:Src/irremote/ir_RC5_RC6.c **** 
+  21:Src/irremote/ir_RC5_RC6.c **** 	if (*offset >= results->rawlen)  return SPACE ;  // After end of recorded buffer, assume SPACE.
+  42              		.loc 1 21 0
+  43 0004 0C68     		ldr	r4, [r1]
+  44 0006 4669     		ldr	r6, [r0, #20]
+  45 0008 B442     		cmp	r4, r6
+  46 000a 37DA     		bge	.L5
+  22:Src/irremote/ir_RC5_RC6.c **** 	width      = results->rawbuf[*offset];
+  47              		.loc 1 22 0
+  48 000c 0069     		ldr	r0, [r0, #16]
+  49              	.LVL1:
+  50 000e 50F82470 		ldr	r7, [r0, r4, lsl #2]
+  51              	.LVL2:
+  23:Src/irremote/ir_RC5_RC6.c **** 	val        = ((*offset) % 2) ? MARK : SPACE;
+  52              		.loc 1 23 0
+  53 0012 04F00104 		and	r4, r4, #1
+  54 0016 002C     		cmp	r4, #0
+  55 0018 0CBF     		ite	eq
+  56 001a 4FF00108 		moveq	r8, #1
+  57 001e 4FF00008 		movne	r8, #0
+  58              	.LVL3:
+  24:Src/irremote/ir_RC5_RC6.c **** 	correction = (val == MARK) ? MARK_EXCESS : - MARK_EXCESS;
+  59              		.loc 1 24 0
+  60 0022 16D0     		beq	.L6
+  61 0024 4FF06409 		mov	r9, #100
+  62              	.L3:
+  63 0028 1E46     		mov	r6, r3
+  64 002a 1546     		mov	r5, r2
+  65 002c 0C46     		mov	r4, r1
+  66              	.LVL4:
+  25:Src/irremote/ir_RC5_RC6.c **** 
+  26:Src/irremote/ir_RC5_RC6.c **** 	if      (MATCH(width, (  t1) + correction))  avail = 1 ;
+  67              		.loc 1 26 0 discriminator 4
+  68 002e 09EB0301 		add	r1, r9, r3
+  69              	.LVL5:
+  70 0032 3846     		mov	r0, r7
+  71 0034 FFF7FEFF 		bl	MATCH
+  72              	.LVL6:
+  73 0038 70B1     		cbz	r0, .L11
+  74              		.loc 1 26 0 is_stmt 0
+  75 003a 0122     		movs	r2, #1
+  76              	.LVL7:
+  77              	.L4:
+  27:Src/irremote/ir_RC5_RC6.c **** 	else if (MATCH(width, (2*t1) + correction))  avail = 2 ;
+  28:Src/irremote/ir_RC5_RC6.c **** 	else if (MATCH(width, (3*t1) + correction))  avail = 3 ;
+  29:Src/irremote/ir_RC5_RC6.c **** 	else                                         return -1 ;
+  30:Src/irremote/ir_RC5_RC6.c **** 
+  31:Src/irremote/ir_RC5_RC6.c **** 	(*used)++;
+  78              		.loc 1 31 0 is_stmt 1
+  79 003c 2B68     		ldr	r3, [r5]
+  80 003e 0133     		adds	r3, r3, #1
+  81 0040 2B60     		str	r3, [r5]
+  32:Src/irremote/ir_RC5_RC6.c **** 	if (*used >= avail) {
+  82              		.loc 1 32 0
+  83 0042 9A42     		cmp	r2, r3
+ARM GAS  /tmp/ccI0BwT5.s 			page 3
+
+
+  84 0044 1CDC     		bgt	.L1
+  33:Src/irremote/ir_RC5_RC6.c **** 		*used = 0;
+  85              		.loc 1 33 0
+  86 0046 0023     		movs	r3, #0
+  87 0048 2B60     		str	r3, [r5]
+  34:Src/irremote/ir_RC5_RC6.c **** 		(*offset)++;
+  88              		.loc 1 34 0
+  89 004a 2368     		ldr	r3, [r4]
+  90 004c 0133     		adds	r3, r3, #1
+  91 004e 2360     		str	r3, [r4]
+  92 0050 16E0     		b	.L1
+  93              	.LVL8:
+  94              	.L6:
+  24:Src/irremote/ir_RC5_RC6.c **** 
+  95              		.loc 1 24 0
+  96 0052 6FF06309 		mvn	r9, #99
+  97 0056 E7E7     		b	.L3
+  98              	.LVL9:
+  99              	.L11:
+  27:Src/irremote/ir_RC5_RC6.c **** 	else if (MATCH(width, (3*t1) + correction))  avail = 3 ;
+ 100              		.loc 1 27 0
+ 101 0058 09EB4601 		add	r1, r9, r6, lsl #1
+ 102 005c 3846     		mov	r0, r7
+ 103 005e FFF7FEFF 		bl	MATCH
+ 104              	.LVL10:
+ 105 0062 08B1     		cbz	r0, .L12
+ 106 0064 0222     		movs	r2, #2
+ 107 0066 E9E7     		b	.L4
+ 108              	.L12:
+  28:Src/irremote/ir_RC5_RC6.c **** 	else                                         return -1 ;
+ 109              		.loc 1 28 0
+ 110 0068 06EB4606 		add	r6, r6, r6, lsl #1
+ 111              	.LVL11:
+ 112 006c 09EB0601 		add	r1, r9, r6
+ 113 0070 3846     		mov	r0, r7
+ 114 0072 FFF7FEFF 		bl	MATCH
+ 115              	.LVL12:
+ 116 0076 30B1     		cbz	r0, .L9
+ 117 0078 0322     		movs	r2, #3
+ 118 007a DFE7     		b	.L4
+ 119              	.LVL13:
+ 120              	.L5:
+  21:Src/irremote/ir_RC5_RC6.c **** 	width      = results->rawbuf[*offset];
+ 121              		.loc 1 21 0
+ 122 007c 4FF00108 		mov	r8, #1
+ 123              	.LVL14:
+ 124              	.L1:
+  35:Src/irremote/ir_RC5_RC6.c **** 	}
+  36:Src/irremote/ir_RC5_RC6.c **** 
+  37:Src/irremote/ir_RC5_RC6.c **** 	DBG_PRINTLN( (val == MARK) ? "MARK" : "SPACE" );
+  38:Src/irremote/ir_RC5_RC6.c **** 
+  39:Src/irremote/ir_RC5_RC6.c **** 	return val;
+  40:Src/irremote/ir_RC5_RC6.c **** }
+ 125              		.loc 1 40 0
+ 126 0080 4046     		mov	r0, r8
+ 127 0082 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 128              	.LVL15:
+ARM GAS  /tmp/ccI0BwT5.s 			page 4
+
+
+ 129              	.L9:
+  29:Src/irremote/ir_RC5_RC6.c **** 
+ 130              		.loc 1 29 0
+ 131 0086 4FF0FF38 		mov	r8, #-1
+ 132              	.LVL16:
+ 133 008a F9E7     		b	.L1
+ 134              		.cfi_endproc
+ 135              	.LFE64:
+ 137              		.section	.text.sendRC5,"ax",%progbits
+ 138              		.align	1
+ 139              		.global	sendRC5
+ 140              		.syntax unified
+ 141              		.thumb
+ 142              		.thumb_func
+ 143              		.fpu softvfp
+ 145              	sendRC5:
+ 146              	.LFB65:
+  41:Src/irremote/ir_RC5_RC6.c **** #endif
+  42:Src/irremote/ir_RC5_RC6.c **** 
+  43:Src/irremote/ir_RC5_RC6.c **** //==============================================================================
+  44:Src/irremote/ir_RC5_RC6.c **** // RRRR    CCCC  55555
+  45:Src/irremote/ir_RC5_RC6.c **** // R   R  C      5
+  46:Src/irremote/ir_RC5_RC6.c **** // RRRR   C      5555
+  47:Src/irremote/ir_RC5_RC6.c **** // R  R   C          5
+  48:Src/irremote/ir_RC5_RC6.c **** // R   R   CCCC  5555
+  49:Src/irremote/ir_RC5_RC6.c **** //
+  50:Src/irremote/ir_RC5_RC6.c **** // NB: First bit must be a one (start bit)
+  51:Src/irremote/ir_RC5_RC6.c **** //
+  52:Src/irremote/ir_RC5_RC6.c **** #define MIN_RC5_SAMPLES     11
+  53:Src/irremote/ir_RC5_RC6.c **** #define RC5_T1             889
+  54:Src/irremote/ir_RC5_RC6.c **** #define RC5_RPT_LENGTH   46000
+  55:Src/irremote/ir_RC5_RC6.c **** 
+  56:Src/irremote/ir_RC5_RC6.c **** //+=============================================================================
+  57:Src/irremote/ir_RC5_RC6.c **** #if SEND_RC5
+  58:Src/irremote/ir_RC5_RC6.c **** void  sendRC5 (unsigned long data,  int nbits)
+  59:Src/irremote/ir_RC5_RC6.c **** {
+ 147              		.loc 1 59 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 151              	.LVL17:
+ 152 0000 38B5     		push	{r3, r4, r5, lr}
+ 153              	.LCFI1:
+ 154              		.cfi_def_cfa_offset 16
+ 155              		.cfi_offset 3, -16
+ 156              		.cfi_offset 4, -12
+ 157              		.cfi_offset 5, -8
+ 158              		.cfi_offset 14, -4
+ 159 0002 0546     		mov	r5, r0
+ 160 0004 0C46     		mov	r4, r1
+  60:Src/irremote/ir_RC5_RC6.c **** 	// Set IR carrier frequency
+  61:Src/irremote/ir_RC5_RC6.c ****     irsend_enableIROut(36);
+ 161              		.loc 1 61 0
+ 162 0006 2420     		movs	r0, #36
+ 163              	.LVL18:
+ 164 0008 FFF7FEFF 		bl	irsend_enableIROut
+ 165              	.LVL19:
+ARM GAS  /tmp/ccI0BwT5.s 			page 5
+
+
+  62:Src/irremote/ir_RC5_RC6.c **** 
+  63:Src/irremote/ir_RC5_RC6.c **** 	// Start
+  64:Src/irremote/ir_RC5_RC6.c ****     irsend_mark(RC5_T1);
+ 166              		.loc 1 64 0
+ 167 000c 40F27930 		movw	r0, #889
+ 168 0010 FFF7FEFF 		bl	irsend_mark
+ 169              	.LVL20:
+  65:Src/irremote/ir_RC5_RC6.c ****     irsend_space(RC5_T1);
+ 170              		.loc 1 65 0
+ 171 0014 40F27930 		movw	r0, #889
+ 172 0018 FFF7FEFF 		bl	irsend_space
+ 173              	.LVL21:
+  66:Src/irremote/ir_RC5_RC6.c ****     irsend_mark(RC5_T1);
+ 174              		.loc 1 66 0
+ 175 001c 40F27930 		movw	r0, #889
+ 176 0020 FFF7FEFF 		bl	irsend_mark
+ 177              	.LVL22:
+  67:Src/irremote/ir_RC5_RC6.c **** 
+  68:Src/irremote/ir_RC5_RC6.c **** 	// Data
+  69:Src/irremote/ir_RC5_RC6.c ****     unsigned long  mask;
+  70:Src/irremote/ir_RC5_RC6.c ****     for (mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+ 178              		.loc 1 70 0
+ 179 0024 631E     		subs	r3, r4, #1
+ 180 0026 0124     		movs	r4, #1
+ 181              	.LVL23:
+ 182 0028 9C40     		lsls	r4, r4, r3
+ 183              	.LVL24:
+ 184 002a 08E0     		b	.L14
+ 185              	.LVL25:
+ 186              	.L15:
+  71:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+  72:Src/irremote/ir_RC5_RC6.c ****             irsend_space(RC5_T1); // 1 is space, then mark
+  73:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(RC5_T1);
+  74:Src/irremote/ir_RC5_RC6.c **** 		} else {
+  75:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(RC5_T1);
+ 187              		.loc 1 75 0
+ 188 002c 40F27930 		movw	r0, #889
+ 189 0030 FFF7FEFF 		bl	irsend_mark
+ 190              	.LVL26:
+  76:Src/irremote/ir_RC5_RC6.c ****             irsend_space(RC5_T1);
+ 191              		.loc 1 76 0
+ 192 0034 40F27930 		movw	r0, #889
+ 193 0038 FFF7FEFF 		bl	irsend_space
+ 194              	.LVL27:
+ 195              	.L16:
+  70:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+ 196              		.loc 1 70 0 discriminator 2
+ 197 003c 6408     		lsrs	r4, r4, #1
+ 198              	.LVL28:
+ 199              	.L14:
+  70:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+ 200              		.loc 1 70 0 is_stmt 0 discriminator 1
+ 201 003e 54B1     		cbz	r4, .L19
+  71:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+ 202              		.loc 1 71 0 is_stmt 1
+ 203 0040 2C42     		tst	r4, r5
+ 204 0042 F3D0     		beq	.L15
+ARM GAS  /tmp/ccI0BwT5.s 			page 6
+
+
+  72:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(RC5_T1);
+ 205              		.loc 1 72 0
+ 206 0044 40F27930 		movw	r0, #889
+ 207 0048 FFF7FEFF 		bl	irsend_space
+ 208              	.LVL29:
+  73:Src/irremote/ir_RC5_RC6.c **** 		} else {
+ 209              		.loc 1 73 0
+ 210 004c 40F27930 		movw	r0, #889
+ 211 0050 FFF7FEFF 		bl	irsend_mark
+ 212              	.LVL30:
+ 213 0054 F2E7     		b	.L16
+ 214              	.L19:
+  77:Src/irremote/ir_RC5_RC6.c **** 		}
+  78:Src/irremote/ir_RC5_RC6.c **** 	}
+  79:Src/irremote/ir_RC5_RC6.c **** 
+  80:Src/irremote/ir_RC5_RC6.c ****     irsend_space(0);  // Always end with the LED off
+ 215              		.loc 1 80 0
+ 216 0056 0020     		movs	r0, #0
+ 217 0058 FFF7FEFF 		bl	irsend_space
+ 218              	.LVL31:
+ 219 005c 38BD     		pop	{r3, r4, r5, pc}
+ 220              		.cfi_endproc
+ 221              	.LFE65:
+ 223              		.section	.text.decodeRC5,"ax",%progbits
+ 224              		.align	1
+ 225              		.global	decodeRC5
+ 226              		.syntax unified
+ 227              		.thumb
+ 228              		.thumb_func
+ 229              		.fpu softvfp
+ 231              	decodeRC5:
+ 232              	.LFB66:
+  81:Src/irremote/ir_RC5_RC6.c **** }
+  82:Src/irremote/ir_RC5_RC6.c **** #endif
+  83:Src/irremote/ir_RC5_RC6.c **** 
+  84:Src/irremote/ir_RC5_RC6.c **** //+=============================================================================
+  85:Src/irremote/ir_RC5_RC6.c **** #if DECODE_RC5
+  86:Src/irremote/ir_RC5_RC6.c **** unsigned char  decodeRC5 (struct decode_results *results)
+  87:Src/irremote/ir_RC5_RC6.c **** {
+ 233              		.loc 1 87 0
+ 234              		.cfi_startproc
+ 235              		@ args = 0, pretend = 0, frame = 8
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237              	.LVL32:
+ 238 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 239              	.LCFI2:
+ 240              		.cfi_def_cfa_offset 20
+ 241              		.cfi_offset 4, -20
+ 242              		.cfi_offset 5, -16
+ 243              		.cfi_offset 6, -12
+ 244              		.cfi_offset 7, -8
+ 245              		.cfi_offset 14, -4
+ 246 0002 83B0     		sub	sp, sp, #12
+ 247              	.LCFI3:
+ 248              		.cfi_def_cfa_offset 32
+ 249              	.LVL33:
+  88:Src/irremote/ir_RC5_RC6.c **** 	int   nbits;
+ARM GAS  /tmp/ccI0BwT5.s 			page 7
+
+
+  89:Src/irremote/ir_RC5_RC6.c **** 	long  data   = 0;
+  90:Src/irremote/ir_RC5_RC6.c **** 	int   used   = 0;
+ 250              		.loc 1 90 0
+ 251 0004 0023     		movs	r3, #0
+ 252 0006 0193     		str	r3, [sp, #4]
+  91:Src/irremote/ir_RC5_RC6.c **** 	int   offset = 1;  // Skip gap space
+ 253              		.loc 1 91 0
+ 254 0008 0123     		movs	r3, #1
+ 255 000a 0093     		str	r3, [sp]
+  92:Src/irremote/ir_RC5_RC6.c **** 
+  93:Src/irremote/ir_RC5_RC6.c ****     if (irparams.rawlen < MIN_RC5_SAMPLES + 2)  return FALSE ;
+ 256              		.loc 1 93 0
+ 257 000c 2A4B     		ldr	r3, .L37
+ 258 000e DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 259 0010 DBB2     		uxtb	r3, r3
+ 260 0012 0C2B     		cmp	r3, #12
+ 261 0014 02D8     		bhi	.L33
+ 262 0016 0020     		movs	r0, #0
+ 263              	.LVL34:
+ 264              	.L21:
+  94:Src/irremote/ir_RC5_RC6.c **** 
+  95:Src/irremote/ir_RC5_RC6.c **** 	// Get start bits
+  96:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC5_T1) != MARK)   return FALSE ;
+  97:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC5_T1) != SPACE)  return FALSE ;
+  98:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC5_T1) != MARK)   return FALSE ;
+  99:Src/irremote/ir_RC5_RC6.c **** 
+ 100:Src/irremote/ir_RC5_RC6.c **** 	for (nbits = 0;  offset < irparams.rawlen;  nbits++) {
+ 101:Src/irremote/ir_RC5_RC6.c **** 		int  levelA = getRClevel(results, &offset, &used, RC5_T1);
+ 102:Src/irremote/ir_RC5_RC6.c **** 		int  levelB = getRClevel(results, &offset, &used, RC5_T1);
+ 103:Src/irremote/ir_RC5_RC6.c **** 
+ 104:Src/irremote/ir_RC5_RC6.c **** 		if      ((levelA == SPACE) && (levelB == MARK ))  data = (data << 1) | 1 ;
+ 105:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == MARK ) && (levelB == SPACE))  data = (data << 1) | 0 ;
+ 106:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;
+ 107:Src/irremote/ir_RC5_RC6.c **** 	}
+ 108:Src/irremote/ir_RC5_RC6.c **** 
+ 109:Src/irremote/ir_RC5_RC6.c **** 	// Success
+ 110:Src/irremote/ir_RC5_RC6.c **** 	results->bits        = nbits;
+ 111:Src/irremote/ir_RC5_RC6.c **** 	results->value       = data;
+ 112:Src/irremote/ir_RC5_RC6.c **** 	results->decode_type = RC5;
+ 113:Src/irremote/ir_RC5_RC6.c ****     return TRUE;
+ 114:Src/irremote/ir_RC5_RC6.c **** }
+ 265              		.loc 1 114 0
+ 266 0018 03B0     		add	sp, sp, #12
+ 267              	.LCFI4:
+ 268              		.cfi_remember_state
+ 269              		.cfi_def_cfa_offset 20
+ 270              		@ sp needed
+ 271 001a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 272              	.LVL35:
+ 273              	.L33:
+ 274              	.LCFI5:
+ 275              		.cfi_restore_state
+ 276 001c 0446     		mov	r4, r0
+  96:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC5_T1) != SPACE)  return FALSE ;
+ 277              		.loc 1 96 0
+ 278 001e 40F27933 		movw	r3, #889
+ 279 0022 01AA     		add	r2, sp, #4
+ARM GAS  /tmp/ccI0BwT5.s 			page 8
+
+
+ 280 0024 6946     		mov	r1, sp
+ 281 0026 FFF7FEFF 		bl	getRClevel
+ 282              	.LVL36:
+ 283 002a 08B1     		cbz	r0, .L34
+ 284 002c 0020     		movs	r0, #0
+ 285 002e F3E7     		b	.L21
+ 286              	.L34:
+  97:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC5_T1) != MARK)   return FALSE ;
+ 287              		.loc 1 97 0
+ 288 0030 40F27933 		movw	r3, #889
+ 289 0034 01AA     		add	r2, sp, #4
+ 290 0036 6946     		mov	r1, sp
+ 291 0038 2046     		mov	r0, r4
+ 292 003a FFF7FEFF 		bl	getRClevel
+ 293              	.LVL37:
+ 294 003e 0128     		cmp	r0, #1
+ 295 0040 01D0     		beq	.L35
+ 296 0042 0020     		movs	r0, #0
+ 297 0044 E8E7     		b	.L21
+ 298              	.L35:
+  98:Src/irremote/ir_RC5_RC6.c **** 
+ 299              		.loc 1 98 0
+ 300 0046 40F27933 		movw	r3, #889
+ 301 004a 01AA     		add	r2, sp, #4
+ 302 004c 6946     		mov	r1, sp
+ 303 004e 2046     		mov	r0, r4
+ 304 0050 FFF7FEFF 		bl	getRClevel
+ 305              	.LVL38:
+ 306 0054 0746     		mov	r7, r0
+ 307 0056 40BB     		cbnz	r0, .L29
+ 308 0058 0026     		movs	r6, #0
+ 309 005a 04E0     		b	.L22
+ 310              	.LVL39:
+ 311              	.L23:
+ 312              	.LBB2:
+ 105:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;
+ 313              		.loc 1 105 0
+ 314 005c 3DBB     		cbnz	r5, .L30
+ 105:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;
+ 315              		.loc 1 105 0 is_stmt 0 discriminator 1
+ 316 005e 0128     		cmp	r0, #1
+ 317 0060 27D1     		bne	.L31
+ 105:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;
+ 318              		.loc 1 105 0 discriminator 2
+ 319 0062 7600     		lsls	r6, r6, #1
+ 320              	.LVL40:
+ 321              	.L24:
+ 322              	.LBE2:
+ 100:Src/irremote/ir_RC5_RC6.c **** 		int  levelA = getRClevel(results, &offset, &used, RC5_T1);
+ 323              		.loc 1 100 0 is_stmt 1 discriminator 2
+ 324 0064 0137     		adds	r7, r7, #1
+ 325              	.LVL41:
+ 326              	.L22:
+ 100:Src/irremote/ir_RC5_RC6.c **** 		int  levelA = getRClevel(results, &offset, &used, RC5_T1);
+ 327              		.loc 1 100 0 is_stmt 0 discriminator 1
+ 328 0066 144B     		ldr	r3, .L37
+ 329 0068 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ARM GAS  /tmp/ccI0BwT5.s 			page 9
+
+
+ 330 006a DBB2     		uxtb	r3, r3
+ 331 006c 009A     		ldr	r2, [sp]
+ 332 006e 9342     		cmp	r3, r2
+ 333 0070 16DD     		ble	.L36
+ 334              	.LBB3:
+ 101:Src/irremote/ir_RC5_RC6.c **** 		int  levelB = getRClevel(results, &offset, &used, RC5_T1);
+ 335              		.loc 1 101 0 is_stmt 1
+ 336 0072 40F27933 		movw	r3, #889
+ 337 0076 01AA     		add	r2, sp, #4
+ 338 0078 6946     		mov	r1, sp
+ 339 007a 2046     		mov	r0, r4
+ 340 007c FFF7FEFF 		bl	getRClevel
+ 341              	.LVL42:
+ 342 0080 0546     		mov	r5, r0
+ 343              	.LVL43:
+ 102:Src/irremote/ir_RC5_RC6.c **** 
+ 344              		.loc 1 102 0
+ 345 0082 40F27933 		movw	r3, #889
+ 346 0086 01AA     		add	r2, sp, #4
+ 347 0088 6946     		mov	r1, sp
+ 348 008a 2046     		mov	r0, r4
+ 349              	.LVL44:
+ 350 008c FFF7FEFF 		bl	getRClevel
+ 351              	.LVL45:
+ 104:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == MARK ) && (levelB == SPACE))  data = (data << 1) | 0 ;
+ 352              		.loc 1 104 0
+ 353 0090 012D     		cmp	r5, #1
+ 354 0092 E3D1     		bne	.L23
+ 104:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == MARK ) && (levelB == SPACE))  data = (data << 1) | 0 ;
+ 355              		.loc 1 104 0 is_stmt 0 discriminator 1
+ 356 0094 0028     		cmp	r0, #0
+ 357 0096 E1D1     		bne	.L23
+ 104:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == MARK ) && (levelB == SPACE))  data = (data << 1) | 0 ;
+ 358              		.loc 1 104 0 discriminator 2
+ 359 0098 7600     		lsls	r6, r6, #1
+ 360              	.LVL46:
+ 361 009a 46F00106 		orr	r6, r6, #1
+ 362              	.LVL47:
+ 363 009e E1E7     		b	.L24
+ 364              	.LVL48:
+ 365              	.L36:
+ 366              	.LBE3:
+ 110:Src/irremote/ir_RC5_RC6.c **** 	results->value       = data;
+ 367              		.loc 1 110 0 is_stmt 1
+ 368 00a0 E760     		str	r7, [r4, #12]
+ 111:Src/irremote/ir_RC5_RC6.c **** 	results->decode_type = RC5;
+ 369              		.loc 1 111 0
+ 370 00a2 A660     		str	r6, [r4, #8]
+ 112:Src/irremote/ir_RC5_RC6.c ****     return TRUE;
+ 371              		.loc 1 112 0
+ 372 00a4 0120     		movs	r0, #1
+ 373 00a6 2070     		strb	r0, [r4]
+ 113:Src/irremote/ir_RC5_RC6.c **** }
+ 374              		.loc 1 113 0
+ 375 00a8 B6E7     		b	.L21
+ 376              	.LVL49:
+ 377              	.L29:
+ARM GAS  /tmp/ccI0BwT5.s 			page 10
+
+
+  98:Src/irremote/ir_RC5_RC6.c **** 
+ 378              		.loc 1 98 0
+ 379 00aa 0020     		movs	r0, #0
+ 380 00ac B4E7     		b	.L21
+ 381              	.LVL50:
+ 382              	.L30:
+ 383              	.LBB4:
+ 106:Src/irremote/ir_RC5_RC6.c **** 	}
+ 384              		.loc 1 106 0
+ 385 00ae 0020     		movs	r0, #0
+ 386              	.LVL51:
+ 387 00b0 B2E7     		b	.L21
+ 388              	.LVL52:
+ 389              	.L31:
+ 390 00b2 0020     		movs	r0, #0
+ 391              	.LVL53:
+ 392 00b4 B0E7     		b	.L21
+ 393              	.L38:
+ 394 00b6 00BF     		.align	2
+ 395              	.L37:
+ 396 00b8 00000000 		.word	irparams
+ 397              	.LBE4:
+ 398              		.cfi_endproc
+ 399              	.LFE66:
+ 401              		.section	.text.sendRC6,"ax",%progbits
+ 402              		.align	1
+ 403              		.global	sendRC6
+ 404              		.syntax unified
+ 405              		.thumb
+ 406              		.thumb_func
+ 407              		.fpu softvfp
+ 409              	sendRC6:
+ 410              	.LFB67:
+ 115:Src/irremote/ir_RC5_RC6.c **** #endif
+ 116:Src/irremote/ir_RC5_RC6.c **** 
+ 117:Src/irremote/ir_RC5_RC6.c **** //+=============================================================================
+ 118:Src/irremote/ir_RC5_RC6.c **** // RRRR    CCCC   6666
+ 119:Src/irremote/ir_RC5_RC6.c **** // R   R  C      6
+ 120:Src/irremote/ir_RC5_RC6.c **** // RRRR   C      6666
+ 121:Src/irremote/ir_RC5_RC6.c **** // R  R   C      6   6
+ 122:Src/irremote/ir_RC5_RC6.c **** // R   R   CCCC   666
+ 123:Src/irremote/ir_RC5_RC6.c **** //
+ 124:Src/irremote/ir_RC5_RC6.c **** // NB : Caller needs to take care of flipping the toggle bit
+ 125:Src/irremote/ir_RC5_RC6.c **** //
+ 126:Src/irremote/ir_RC5_RC6.c **** #define MIN_RC6_SAMPLES      1
+ 127:Src/irremote/ir_RC5_RC6.c **** #define RC6_HDR_MARK      2666
+ 128:Src/irremote/ir_RC5_RC6.c **** #define RC6_HDR_SPACE      889
+ 129:Src/irremote/ir_RC5_RC6.c **** #define RC6_T1             444
+ 130:Src/irremote/ir_RC5_RC6.c **** #define RC6_RPT_LENGTH   46000
+ 131:Src/irremote/ir_RC5_RC6.c **** 
+ 132:Src/irremote/ir_RC5_RC6.c **** #if SEND_RC6
+ 133:Src/irremote/ir_RC5_RC6.c **** void  sendRC6 (unsigned long data,  int nbits)
+ 134:Src/irremote/ir_RC5_RC6.c **** {
+ 411              		.loc 1 134 0
+ 412              		.cfi_startproc
+ 413              		@ args = 0, pretend = 0, frame = 0
+ 414              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccI0BwT5.s 			page 11
+
+
+ 415              	.LVL54:
+ 416 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 417              	.LCFI6:
+ 418              		.cfi_def_cfa_offset 24
+ 419              		.cfi_offset 3, -24
+ 420              		.cfi_offset 4, -20
+ 421              		.cfi_offset 5, -16
+ 422              		.cfi_offset 6, -12
+ 423              		.cfi_offset 7, -8
+ 424              		.cfi_offset 14, -4
+ 425 0002 0746     		mov	r7, r0
+ 426 0004 0C46     		mov	r4, r1
+ 135:Src/irremote/ir_RC5_RC6.c **** 	// Set IR carrier frequency
+ 136:Src/irremote/ir_RC5_RC6.c ****     irsend_enableIROut(36);
+ 427              		.loc 1 136 0
+ 428 0006 2420     		movs	r0, #36
+ 429              	.LVL55:
+ 430 0008 FFF7FEFF 		bl	irsend_enableIROut
+ 431              	.LVL56:
+ 137:Src/irremote/ir_RC5_RC6.c **** 
+ 138:Src/irremote/ir_RC5_RC6.c **** 	// Header
+ 139:Src/irremote/ir_RC5_RC6.c ****     irsend_mark(RC6_HDR_MARK);
+ 432              		.loc 1 139 0
+ 433 000c 40F66A20 		movw	r0, #2666
+ 434 0010 FFF7FEFF 		bl	irsend_mark
+ 435              	.LVL57:
+ 140:Src/irremote/ir_RC5_RC6.c ****     irsend_space(RC6_HDR_SPACE);
+ 436              		.loc 1 140 0
+ 437 0014 40F27930 		movw	r0, #889
+ 438 0018 FFF7FEFF 		bl	irsend_space
+ 439              	.LVL58:
+ 141:Src/irremote/ir_RC5_RC6.c **** 
+ 142:Src/irremote/ir_RC5_RC6.c **** 	// Start bit
+ 143:Src/irremote/ir_RC5_RC6.c ****     irsend_mark(RC6_T1);
+ 440              		.loc 1 143 0
+ 441 001c 4FF4DE70 		mov	r0, #444
+ 442 0020 FFF7FEFF 		bl	irsend_mark
+ 443              	.LVL59:
+ 144:Src/irremote/ir_RC5_RC6.c ****     irsend_space(RC6_T1);
+ 444              		.loc 1 144 0
+ 445 0024 4FF4DE70 		mov	r0, #444
+ 446 0028 FFF7FEFF 		bl	irsend_space
+ 447              	.LVL60:
+ 145:Src/irremote/ir_RC5_RC6.c **** 
+ 146:Src/irremote/ir_RC5_RC6.c **** 	// Data
+ 147:Src/irremote/ir_RC5_RC6.c ****     unsigned long  i, mask;
+ 148:Src/irremote/ir_RC5_RC6.c ****     for (i = 1, mask = 1UL << (nbits - 1);  mask;  i++, mask >>= 1) {
+ 448              		.loc 1 148 0
+ 449 002c 013C     		subs	r4, r4, #1
+ 450              	.LVL61:
+ 451 002e 0125     		movs	r5, #1
+ 452 0030 05FA04F4 		lsl	r4, r5, r4
+ 453              	.LVL62:
+ 454 0034 0AE0     		b	.L40
+ 455              	.LVL63:
+ 456              	.L48:
+ 457              	.LBB5:
+ARM GAS  /tmp/ccI0BwT5.s 			page 12
+
+
+ 149:Src/irremote/ir_RC5_RC6.c **** 		// The fourth bit we send is a "double width trailer bit"
+ 150:Src/irremote/ir_RC5_RC6.c **** 		int  t = (i == 4) ? (RC6_T1 * 2) : (RC6_T1) ;
+ 458              		.loc 1 150 0
+ 459 0036 4FF45E76 		mov	r6, #888
+ 460 003a 0CE0     		b	.L41
+ 461              	.LVL64:
+ 462              	.L42:
+ 151:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+ 152:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(t);
+ 153:Src/irremote/ir_RC5_RC6.c ****             irsend_space(t);
+ 154:Src/irremote/ir_RC5_RC6.c **** 		} else {
+ 155:Src/irremote/ir_RC5_RC6.c ****             irsend_space(t);
+ 463              		.loc 1 155 0
+ 464 003c 3046     		mov	r0, r6
+ 465 003e FFF7FEFF 		bl	irsend_space
+ 466              	.LVL65:
+ 156:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(t);
+ 467              		.loc 1 156 0
+ 468 0042 3046     		mov	r0, r6
+ 469 0044 FFF7FEFF 		bl	irsend_mark
+ 470              	.LVL66:
+ 471              	.L43:
+ 472              	.LBE5:
+ 148:Src/irremote/ir_RC5_RC6.c **** 		// The fourth bit we send is a "double width trailer bit"
+ 473              		.loc 1 148 0 discriminator 2
+ 474 0048 0135     		adds	r5, r5, #1
+ 475              	.LVL67:
+ 476 004a 6408     		lsrs	r4, r4, #1
+ 477              	.LVL68:
+ 478              	.L40:
+ 148:Src/irremote/ir_RC5_RC6.c **** 		// The fourth bit we send is a "double width trailer bit"
+ 479              		.loc 1 148 0 is_stmt 0 discriminator 1
+ 480 004c 64B1     		cbz	r4, .L47
+ 481              	.LBB6:
+ 150:Src/irremote/ir_RC5_RC6.c **** 		if (data & mask) {
+ 482              		.loc 1 150 0 is_stmt 1
+ 483 004e 042D     		cmp	r5, #4
+ 484 0050 F1D0     		beq	.L48
+ 485 0052 4FF4DE76 		mov	r6, #444
+ 486              	.L41:
+ 487              	.LVL69:
+ 151:Src/irremote/ir_RC5_RC6.c ****             irsend_mark(t);
+ 488              		.loc 1 151 0 discriminator 4
+ 489 0056 3C42     		tst	r4, r7
+ 490 0058 F0D0     		beq	.L42
+ 152:Src/irremote/ir_RC5_RC6.c ****             irsend_space(t);
+ 491              		.loc 1 152 0
+ 492 005a 3046     		mov	r0, r6
+ 493 005c FFF7FEFF 		bl	irsend_mark
+ 494              	.LVL70:
+ 153:Src/irremote/ir_RC5_RC6.c **** 		} else {
+ 495              		.loc 1 153 0
+ 496 0060 3046     		mov	r0, r6
+ 497 0062 FFF7FEFF 		bl	irsend_space
+ 498              	.LVL71:
+ 499 0066 EFE7     		b	.L43
+ 500              	.LVL72:
+ARM GAS  /tmp/ccI0BwT5.s 			page 13
+
+
+ 501              	.L47:
+ 502              	.LBE6:
+ 157:Src/irremote/ir_RC5_RC6.c **** 		}
+ 158:Src/irremote/ir_RC5_RC6.c **** 	}
+ 159:Src/irremote/ir_RC5_RC6.c **** 
+ 160:Src/irremote/ir_RC5_RC6.c ****     irsend_space(0);  // Always end with the LED off
+ 503              		.loc 1 160 0
+ 504 0068 0020     		movs	r0, #0
+ 505 006a FFF7FEFF 		bl	irsend_space
+ 506              	.LVL73:
+ 507 006e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 508              		.cfi_endproc
+ 509              	.LFE67:
+ 511              		.section	.text.decodeRC6,"ax",%progbits
+ 512              		.align	1
+ 513              		.global	decodeRC6
+ 514              		.syntax unified
+ 515              		.thumb
+ 516              		.thumb_func
+ 517              		.fpu softvfp
+ 519              	decodeRC6:
+ 520              	.LFB68:
+ 161:Src/irremote/ir_RC5_RC6.c **** }
+ 162:Src/irremote/ir_RC5_RC6.c **** #endif
+ 163:Src/irremote/ir_RC5_RC6.c **** 
+ 164:Src/irremote/ir_RC5_RC6.c **** //+=============================================================================
+ 165:Src/irremote/ir_RC5_RC6.c **** #if DECODE_RC6
+ 166:Src/irremote/ir_RC5_RC6.c **** unsigned char  decodeRC6 (struct decode_results *results)
+ 167:Src/irremote/ir_RC5_RC6.c **** {
+ 521              		.loc 1 167 0
+ 522              		.cfi_startproc
+ 523              		@ args = 0, pretend = 0, frame = 8
+ 524              		@ frame_needed = 0, uses_anonymous_args = 0
+ 525              	.LVL74:
+ 526 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 527              	.LCFI7:
+ 528              		.cfi_def_cfa_offset 24
+ 529              		.cfi_offset 4, -24
+ 530              		.cfi_offset 5, -20
+ 531              		.cfi_offset 6, -16
+ 532              		.cfi_offset 7, -12
+ 533              		.cfi_offset 8, -8
+ 534              		.cfi_offset 14, -4
+ 535 0004 82B0     		sub	sp, sp, #8
+ 536              	.LCFI8:
+ 537              		.cfi_def_cfa_offset 32
+ 538              	.LVL75:
+ 168:Src/irremote/ir_RC5_RC6.c **** 	int   nbits;
+ 169:Src/irremote/ir_RC5_RC6.c **** 	long  data   = 0;
+ 170:Src/irremote/ir_RC5_RC6.c **** 	int   used   = 0;
+ 539              		.loc 1 170 0
+ 540 0006 0023     		movs	r3, #0
+ 541 0008 0193     		str	r3, [sp, #4]
+ 171:Src/irremote/ir_RC5_RC6.c **** 	int   offset = 1;  // Skip first space
+ 172:Src/irremote/ir_RC5_RC6.c **** 
+ 173:Src/irremote/ir_RC5_RC6.c ****     if (results->rawlen < MIN_RC6_SAMPLES)  return FALSE ;
+ 542              		.loc 1 173 0
+ARM GAS  /tmp/ccI0BwT5.s 			page 14
+
+
+ 543 000a 4369     		ldr	r3, [r0, #20]
+ 544 000c 002B     		cmp	r3, #0
+ 545 000e 77DD     		ble	.L57
+ 546 0010 0446     		mov	r4, r0
+ 174:Src/irremote/ir_RC5_RC6.c **** 
+ 175:Src/irremote/ir_RC5_RC6.c **** 	// Initial mark
+ 176:Src/irremote/ir_RC5_RC6.c ****     if (!MATCH_MARK(results->rawbuf[offset++],  RC6_HDR_MARK))   return FALSE ;
+ 547              		.loc 1 176 0
+ 548 0012 0369     		ldr	r3, [r0, #16]
+ 549 0014 0222     		movs	r2, #2
+ 550 0016 0092     		str	r2, [sp]
+ 551 0018 5868     		ldr	r0, [r3, #4]
+ 552              	.LVL76:
+ 553 001a 40F66A21 		movw	r1, #2666
+ 554 001e FFF7FEFF 		bl	MATCH_MARK
+ 555              	.LVL77:
+ 556 0022 18B9     		cbnz	r0, .L67
+ 557 0024 0020     		movs	r0, #0
+ 558              	.LVL78:
+ 559              	.L50:
+ 177:Src/irremote/ir_RC5_RC6.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], RC6_HDR_SPACE))  return FALSE ;
+ 178:Src/irremote/ir_RC5_RC6.c **** 
+ 179:Src/irremote/ir_RC5_RC6.c **** 	// Get start bit (1)
+ 180:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC6_T1) != MARK)   return FALSE ;
+ 181:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC6_T1) != SPACE)  return FALSE ;
+ 182:Src/irremote/ir_RC5_RC6.c **** 
+ 183:Src/irremote/ir_RC5_RC6.c **** 	for (nbits = 0;  offset < results->rawlen;  nbits++) {
+ 184:Src/irremote/ir_RC5_RC6.c **** 		int  levelA, levelB;  // Next two levels
+ 185:Src/irremote/ir_RC5_RC6.c **** 
+ 186:Src/irremote/ir_RC5_RC6.c **** 		levelA = getRClevel(results, &offset, &used, RC6_T1);
+ 187:Src/irremote/ir_RC5_RC6.c **** 		if (nbits == 3) {
+ 188:Src/irremote/ir_RC5_RC6.c **** 			// T bit is double wide; make sure second half matches
+ 189:Src/irremote/ir_RC5_RC6.c ****             if (levelA != getRClevel(results, &offset, &used, RC6_T1)) return FALSE;
+ 190:Src/irremote/ir_RC5_RC6.c **** 		}
+ 191:Src/irremote/ir_RC5_RC6.c **** 
+ 192:Src/irremote/ir_RC5_RC6.c **** 		levelB = getRClevel(results, &offset, &used, RC6_T1);
+ 193:Src/irremote/ir_RC5_RC6.c **** 		if (nbits == 3) {
+ 194:Src/irremote/ir_RC5_RC6.c **** 			// T bit is double wide; make sure second half matches
+ 195:Src/irremote/ir_RC5_RC6.c ****             if (levelB != getRClevel(results, &offset, &used, RC6_T1)) return FALSE;
+ 196:Src/irremote/ir_RC5_RC6.c **** 		}
+ 197:Src/irremote/ir_RC5_RC6.c **** 
+ 198:Src/irremote/ir_RC5_RC6.c **** 		if      ((levelA == MARK ) && (levelB == SPACE))  data = (data << 1) | 1 ;  // inverted compared 
+ 199:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == SPACE) && (levelB == MARK ))  data = (data << 1) | 0 ;  // ...
+ 200:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;            // Error
+ 201:Src/irremote/ir_RC5_RC6.c **** 	}
+ 202:Src/irremote/ir_RC5_RC6.c **** 
+ 203:Src/irremote/ir_RC5_RC6.c **** 	// Success
+ 204:Src/irremote/ir_RC5_RC6.c **** 	results->bits        = nbits;
+ 205:Src/irremote/ir_RC5_RC6.c **** 	results->value       = data;
+ 206:Src/irremote/ir_RC5_RC6.c **** 	results->decode_type = RC6;
+ 207:Src/irremote/ir_RC5_RC6.c ****     return TRUE;
+ 208:Src/irremote/ir_RC5_RC6.c **** }
+ 560              		.loc 1 208 0
+ 561 0026 02B0     		add	sp, sp, #8
+ 562              	.LCFI9:
+ 563              		.cfi_remember_state
+ 564              		.cfi_def_cfa_offset 24
+ARM GAS  /tmp/ccI0BwT5.s 			page 15
+
+
+ 565              		@ sp needed
+ 566 0028 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 567              	.LVL79:
+ 568              	.L67:
+ 569              	.LCFI10:
+ 570              		.cfi_restore_state
+ 177:Src/irremote/ir_RC5_RC6.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], RC6_HDR_SPACE))  return FALSE ;
+ 571              		.loc 1 177 0
+ 572 002c 2269     		ldr	r2, [r4, #16]
+ 573 002e 009B     		ldr	r3, [sp]
+ 574 0030 591C     		adds	r1, r3, #1
+ 575 0032 0091     		str	r1, [sp]
+ 576 0034 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ 577 0038 40F27931 		movw	r1, #889
+ 578 003c FFF7FEFF 		bl	MATCH_SPACE
+ 579              	.LVL80:
+ 580 0040 08B9     		cbnz	r0, .L68
+ 581 0042 0020     		movs	r0, #0
+ 582 0044 EFE7     		b	.L50
+ 583              	.L68:
+ 180:Src/irremote/ir_RC5_RC6.c ****     if (getRClevel(results, &offset, &used, RC6_T1) != SPACE)  return FALSE ;
+ 584              		.loc 1 180 0
+ 585 0046 4FF4DE73 		mov	r3, #444
+ 586 004a 01AA     		add	r2, sp, #4
+ 587 004c 6946     		mov	r1, sp
+ 588 004e 2046     		mov	r0, r4
+ 589 0050 FFF7FEFF 		bl	getRClevel
+ 590              	.LVL81:
+ 591 0054 0546     		mov	r5, r0
+ 592 0056 08B1     		cbz	r0, .L69
+ 593 0058 0020     		movs	r0, #0
+ 594 005a E4E7     		b	.L50
+ 595              	.L69:
+ 181:Src/irremote/ir_RC5_RC6.c **** 
+ 596              		.loc 1 181 0
+ 597 005c 4FF4DE73 		mov	r3, #444
+ 598 0060 01AA     		add	r2, sp, #4
+ 599 0062 6946     		mov	r1, sp
+ 600 0064 2046     		mov	r0, r4
+ 601 0066 FFF7FEFF 		bl	getRClevel
+ 602              	.LVL82:
+ 603 006a 0128     		cmp	r0, #1
+ 604 006c 01D0     		beq	.L70
+ 605 006e 0020     		movs	r0, #0
+ 606 0070 D9E7     		b	.L50
+ 607              	.L70:
+ 608 0072 4FF00008 		mov	r8, #0
+ 609 0076 1BE0     		b	.L51
+ 610              	.LVL83:
+ 611              	.L72:
+ 612              	.LBB7:
+ 189:Src/irremote/ir_RC5_RC6.c **** 		}
+ 613              		.loc 1 189 0
+ 614 0078 4FF4DE73 		mov	r3, #444
+ 615 007c 01AA     		add	r2, sp, #4
+ 616 007e 6946     		mov	r1, sp
+ 617 0080 2046     		mov	r0, r4
+ARM GAS  /tmp/ccI0BwT5.s 			page 16
+
+
+ 618              	.LVL84:
+ 619 0082 FFF7FEFF 		bl	getRClevel
+ 620              	.LVL85:
+ 621 0086 8642     		cmp	r6, r0
+ 622 0088 20D0     		beq	.L52
+ 623 008a 0020     		movs	r0, #0
+ 624 008c CBE7     		b	.L50
+ 625              	.LVL86:
+ 626              	.L73:
+ 195:Src/irremote/ir_RC5_RC6.c **** 		}
+ 627              		.loc 1 195 0
+ 628 008e 4FF4DE73 		mov	r3, #444
+ 629 0092 01AA     		add	r2, sp, #4
+ 630 0094 6946     		mov	r1, sp
+ 631 0096 2046     		mov	r0, r4
+ 632              	.LVL87:
+ 633 0098 FFF7FEFF 		bl	getRClevel
+ 634              	.LVL88:
+ 635 009c 8742     		cmp	r7, r0
+ 636 009e 1FD0     		beq	.L53
+ 637 00a0 0020     		movs	r0, #0
+ 638 00a2 C0E7     		b	.L50
+ 639              	.L54:
+ 199:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;            // Error
+ 640              		.loc 1 199 0
+ 641 00a4 012E     		cmp	r6, #1
+ 642 00a6 2DD1     		bne	.L64
+ 199:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;            // Error
+ 643              		.loc 1 199 0 is_stmt 0 discriminator 1
+ 644 00a8 77BB     		cbnz	r7, .L65
+ 199:Src/irremote/ir_RC5_RC6.c ****         else                                              return FALSE ;            // Error
+ 645              		.loc 1 199 0 discriminator 2
+ 646 00aa 4FEA4808 		lsl	r8, r8, #1
+ 647              	.LVL89:
+ 648              	.L55:
+ 649              	.LBE7:
+ 183:Src/irremote/ir_RC5_RC6.c **** 		int  levelA, levelB;  // Next two levels
+ 650              		.loc 1 183 0 is_stmt 1 discriminator 2
+ 651 00ae 0135     		adds	r5, r5, #1
+ 652              	.LVL90:
+ 653              	.L51:
+ 183:Src/irremote/ir_RC5_RC6.c **** 		int  levelA, levelB;  // Next two levels
+ 654              		.loc 1 183 0 is_stmt 0 discriminator 1
+ 655 00b0 6269     		ldr	r2, [r4, #20]
+ 656 00b2 009B     		ldr	r3, [sp]
+ 657 00b4 9A42     		cmp	r2, r3
+ 658 00b6 1CDD     		ble	.L71
+ 659              	.LBB8:
+ 186:Src/irremote/ir_RC5_RC6.c **** 		if (nbits == 3) {
+ 660              		.loc 1 186 0 is_stmt 1
+ 661 00b8 4FF4DE73 		mov	r3, #444
+ 662 00bc 01AA     		add	r2, sp, #4
+ 663 00be 6946     		mov	r1, sp
+ 664 00c0 2046     		mov	r0, r4
+ 665 00c2 FFF7FEFF 		bl	getRClevel
+ 666              	.LVL91:
+ 667 00c6 0646     		mov	r6, r0
+ARM GAS  /tmp/ccI0BwT5.s 			page 17
+
+
+ 668              	.LVL92:
+ 187:Src/irremote/ir_RC5_RC6.c **** 			// T bit is double wide; make sure second half matches
+ 669              		.loc 1 187 0
+ 670 00c8 032D     		cmp	r5, #3
+ 671 00ca D5D0     		beq	.L72
+ 672              	.LVL93:
+ 673              	.L52:
+ 192:Src/irremote/ir_RC5_RC6.c **** 		if (nbits == 3) {
+ 674              		.loc 1 192 0
+ 675 00cc 4FF4DE73 		mov	r3, #444
+ 676 00d0 01AA     		add	r2, sp, #4
+ 677 00d2 6946     		mov	r1, sp
+ 678 00d4 2046     		mov	r0, r4
+ 679 00d6 FFF7FEFF 		bl	getRClevel
+ 680              	.LVL94:
+ 681 00da 0746     		mov	r7, r0
+ 682              	.LVL95:
+ 193:Src/irremote/ir_RC5_RC6.c **** 			// T bit is double wide; make sure second half matches
+ 683              		.loc 1 193 0
+ 684 00dc 032D     		cmp	r5, #3
+ 685 00de D6D0     		beq	.L73
+ 686              	.LVL96:
+ 687              	.L53:
+ 198:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == SPACE) && (levelB == MARK ))  data = (data << 1) | 0 ;  // ...
+ 688              		.loc 1 198 0
+ 689 00e0 002E     		cmp	r6, #0
+ 690 00e2 DFD1     		bne	.L54
+ 198:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == SPACE) && (levelB == MARK ))  data = (data << 1) | 0 ;  // ...
+ 691              		.loc 1 198 0 is_stmt 0 discriminator 1
+ 692 00e4 012F     		cmp	r7, #1
+ 693 00e6 DDD1     		bne	.L54
+ 198:Src/irremote/ir_RC5_RC6.c **** 		else if ((levelA == SPACE) && (levelB == MARK ))  data = (data << 1) | 0 ;  // ...
+ 694              		.loc 1 198 0 discriminator 2
+ 695 00e8 4FEA4808 		lsl	r8, r8, #1
+ 696              	.LVL97:
+ 697 00ec 48F00108 		orr	r8, r8, #1
+ 698              	.LVL98:
+ 699 00f0 DDE7     		b	.L55
+ 700              	.LVL99:
+ 701              	.L71:
+ 702              	.LBE8:
+ 204:Src/irremote/ir_RC5_RC6.c **** 	results->value       = data;
+ 703              		.loc 1 204 0 is_stmt 1
+ 704 00f2 E560     		str	r5, [r4, #12]
+ 205:Src/irremote/ir_RC5_RC6.c **** 	results->decode_type = RC6;
+ 705              		.loc 1 205 0
+ 706 00f4 C4F80880 		str	r8, [r4, #8]
+ 206:Src/irremote/ir_RC5_RC6.c ****     return TRUE;
+ 707              		.loc 1 206 0
+ 708 00f8 0223     		movs	r3, #2
+ 709 00fa 2370     		strb	r3, [r4]
+ 207:Src/irremote/ir_RC5_RC6.c **** }
+ 710              		.loc 1 207 0
+ 711 00fc 0120     		movs	r0, #1
+ 712 00fe 92E7     		b	.L50
+ 713              	.LVL100:
+ 714              	.L57:
+ARM GAS  /tmp/ccI0BwT5.s 			page 18
+
+
+ 173:Src/irremote/ir_RC5_RC6.c **** 
+ 715              		.loc 1 173 0
+ 716 0100 0020     		movs	r0, #0
+ 717              	.LVL101:
+ 718 0102 90E7     		b	.L50
+ 719              	.LVL102:
+ 720              	.L64:
+ 721              	.LBB9:
+ 200:Src/irremote/ir_RC5_RC6.c **** 	}
+ 722              		.loc 1 200 0
+ 723 0104 0020     		movs	r0, #0
+ 724 0106 8EE7     		b	.L50
+ 725              	.L65:
+ 726 0108 0020     		movs	r0, #0
+ 727 010a 8CE7     		b	.L50
+ 728              	.LBE9:
+ 729              		.cfi_endproc
+ 730              	.LFE68:
+ 732              		.text
+ 733              	.Letext0:
+ 734              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 735              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 736              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 737              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 738              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 739              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 740              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 741              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 742              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 743              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 744              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/ccI0BwT5.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_RC5_RC6.c
+     /tmp/ccI0BwT5.s:16     .text.getRClevel:0000000000000000 $t
+     /tmp/ccI0BwT5.s:23     .text.getRClevel:0000000000000000 getRClevel
+     /tmp/ccI0BwT5.s:138    .text.sendRC5:0000000000000000 $t
+     /tmp/ccI0BwT5.s:145    .text.sendRC5:0000000000000000 sendRC5
+     /tmp/ccI0BwT5.s:224    .text.decodeRC5:0000000000000000 $t
+     /tmp/ccI0BwT5.s:231    .text.decodeRC5:0000000000000000 decodeRC5
+     /tmp/ccI0BwT5.s:396    .text.decodeRC5:00000000000000b8 $d
+     /tmp/ccI0BwT5.s:402    .text.sendRC6:0000000000000000 $t
+     /tmp/ccI0BwT5.s:409    .text.sendRC6:0000000000000000 sendRC6
+     /tmp/ccI0BwT5.s:512    .text.decodeRC6:0000000000000000 $t
+     /tmp/ccI0BwT5.s:519    .text.decodeRC6:0000000000000000 decodeRC6
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+MATCH
+irsend_enableIROut
+irsend_mark
+irsend_space
+irparams
+MATCH_MARK
+MATCH_SPACE

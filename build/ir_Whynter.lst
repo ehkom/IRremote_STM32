@@ -1,0 +1,451 @@
+ARM GAS  /tmp/ccaASiXB.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_Whynter.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendWhynter,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendWhynter
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendWhynter:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_Whynter.c"
+   1:Src/irremote/ir_Whynter.c **** #include "IRremote.h"
+   2:Src/irremote/ir_Whynter.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_Whynter.c **** 
+   4:Src/irremote/ir_Whynter.c **** //==============================================================================
+   5:Src/irremote/ir_Whynter.c **** //               W   W  H   H  Y   Y N   N TTTTT EEEEE  RRRRR
+   6:Src/irremote/ir_Whynter.c **** //               W   W  H   H   Y Y  NN  N   T   E      R   R
+   7:Src/irremote/ir_Whynter.c **** //               W W W  HHHHH    Y   N N N   T   EEE    RRRR
+   8:Src/irremote/ir_Whynter.c **** //               W W W  H   H    Y   N  NN   T   E      R  R
+   9:Src/irremote/ir_Whynter.c **** //                WWW   H   H    Y   N   N   T   EEEEE  R   R
+  10:Src/irremote/ir_Whynter.c **** //==============================================================================
+  11:Src/irremote/ir_Whynter.c **** 
+  12:Src/irremote/ir_Whynter.c **** #define WHYNTER_BITS          32
+  13:Src/irremote/ir_Whynter.c **** #define WHYNTER_HDR_MARK    2850
+  14:Src/irremote/ir_Whynter.c **** #define WHYNTER_HDR_SPACE   2850
+  15:Src/irremote/ir_Whynter.c **** #define WHYNTER_BIT_MARK     750
+  16:Src/irremote/ir_Whynter.c **** #define WHYNTER_ONE_MARK     750
+  17:Src/irremote/ir_Whynter.c **** #define WHYNTER_ONE_SPACE   2150
+  18:Src/irremote/ir_Whynter.c **** #define WHYNTER_ZERO_MARK    750
+  19:Src/irremote/ir_Whynter.c **** #define WHYNTER_ZERO_SPACE   750
+  20:Src/irremote/ir_Whynter.c **** 
+  21:Src/irremote/ir_Whynter.c **** //+=============================================================================
+  22:Src/irremote/ir_Whynter.c **** #if SEND_WHYNTER
+  23:Src/irremote/ir_Whynter.c **** void  sendWhynter (unsigned long data,  int nbits)
+  24:Src/irremote/ir_Whynter.c **** {
+  26              		.loc 1 24 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 38B5     		push	{r3, r4, r5, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 3, -16
+ARM GAS  /tmp/ccaASiXB.s 			page 2
+
+
+  35              		.cfi_offset 4, -12
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39 0004 0C46     		mov	r4, r1
+  25:Src/irremote/ir_Whynter.c **** 	// Set IR carrier frequency
+  26:Src/irremote/ir_Whynter.c ****     irsend_enableIROut(38);
+  40              		.loc 1 26 0
+  41 0006 2620     		movs	r0, #38
+  42              	.LVL1:
+  43 0008 FFF7FEFF 		bl	irsend_enableIROut
+  44              	.LVL2:
+  27:Src/irremote/ir_Whynter.c **** 
+  28:Src/irremote/ir_Whynter.c **** 	// Start
+  29:Src/irremote/ir_Whynter.c ****     irsend_mark(WHYNTER_ZERO_MARK);
+  45              		.loc 1 29 0
+  46 000c 40F2EE20 		movw	r0, #750
+  47 0010 FFF7FEFF 		bl	irsend_mark
+  48              	.LVL3:
+  30:Src/irremote/ir_Whynter.c ****     irsend_space(WHYNTER_ZERO_SPACE);
+  49              		.loc 1 30 0
+  50 0014 40F2EE20 		movw	r0, #750
+  51 0018 FFF7FEFF 		bl	irsend_space
+  52              	.LVL4:
+  31:Src/irremote/ir_Whynter.c **** 
+  32:Src/irremote/ir_Whynter.c **** 	// Header
+  33:Src/irremote/ir_Whynter.c ****     irsend_mark(WHYNTER_HDR_MARK);
+  53              		.loc 1 33 0
+  54 001c 40F62230 		movw	r0, #2850
+  55 0020 FFF7FEFF 		bl	irsend_mark
+  56              	.LVL5:
+  34:Src/irremote/ir_Whynter.c ****     irsend_space(WHYNTER_HDR_SPACE);
+  57              		.loc 1 34 0
+  58 0024 40F62230 		movw	r0, #2850
+  59 0028 FFF7FEFF 		bl	irsend_space
+  60              	.LVL6:
+  35:Src/irremote/ir_Whynter.c **** 
+  36:Src/irremote/ir_Whynter.c **** 	// Data
+  37:Src/irremote/ir_Whynter.c ****     unsigned long  mask;
+  38:Src/irremote/ir_Whynter.c ****     for (mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+  61              		.loc 1 38 0
+  62 002c 631E     		subs	r3, r4, #1
+  63 002e 0124     		movs	r4, #1
+  64              	.LVL7:
+  65 0030 9C40     		lsls	r4, r4, r3
+  66              	.LVL8:
+  67 0032 08E0     		b	.L2
+  68              	.LVL9:
+  69              	.L3:
+  39:Src/irremote/ir_Whynter.c **** 		if (data & mask) {
+  40:Src/irremote/ir_Whynter.c ****             irsend_mark(WHYNTER_ONE_MARK);
+  41:Src/irremote/ir_Whynter.c ****             irsend_space(WHYNTER_ONE_SPACE);
+  42:Src/irremote/ir_Whynter.c **** 		} else {
+  43:Src/irremote/ir_Whynter.c ****             irsend_mark(WHYNTER_ZERO_MARK);
+  70              		.loc 1 43 0
+  71 0034 40F2EE20 		movw	r0, #750
+  72 0038 FFF7FEFF 		bl	irsend_mark
+ARM GAS  /tmp/ccaASiXB.s 			page 3
+
+
+  73              	.LVL10:
+  44:Src/irremote/ir_Whynter.c ****             irsend_space(WHYNTER_ZERO_SPACE);
+  74              		.loc 1 44 0
+  75 003c 40F2EE20 		movw	r0, #750
+  76 0040 FFF7FEFF 		bl	irsend_space
+  77              	.LVL11:
+  78              	.L4:
+  38:Src/irremote/ir_Whynter.c **** 		if (data & mask) {
+  79              		.loc 1 38 0 discriminator 2
+  80 0044 6408     		lsrs	r4, r4, #1
+  81              	.LVL12:
+  82              	.L2:
+  38:Src/irremote/ir_Whynter.c **** 		if (data & mask) {
+  83              		.loc 1 38 0 is_stmt 0 discriminator 1
+  84 0046 54B1     		cbz	r4, .L7
+  39:Src/irremote/ir_Whynter.c **** 		if (data & mask) {
+  85              		.loc 1 39 0 is_stmt 1
+  86 0048 2C42     		tst	r4, r5
+  87 004a F3D0     		beq	.L3
+  40:Src/irremote/ir_Whynter.c ****             irsend_space(WHYNTER_ONE_SPACE);
+  88              		.loc 1 40 0
+  89 004c 40F2EE20 		movw	r0, #750
+  90 0050 FFF7FEFF 		bl	irsend_mark
+  91              	.LVL13:
+  41:Src/irremote/ir_Whynter.c **** 		} else {
+  92              		.loc 1 41 0
+  93 0054 40F66600 		movw	r0, #2150
+  94 0058 FFF7FEFF 		bl	irsend_space
+  95              	.LVL14:
+  96 005c F2E7     		b	.L4
+  97              	.L7:
+  45:Src/irremote/ir_Whynter.c **** 		}
+  46:Src/irremote/ir_Whynter.c **** 	}
+  47:Src/irremote/ir_Whynter.c **** 
+  48:Src/irremote/ir_Whynter.c **** 	// Footer
+  49:Src/irremote/ir_Whynter.c ****     irsend_mark(WHYNTER_ZERO_MARK);
+  98              		.loc 1 49 0
+  99 005e 40F2EE20 		movw	r0, #750
+ 100 0062 FFF7FEFF 		bl	irsend_mark
+ 101              	.LVL15:
+  50:Src/irremote/ir_Whynter.c ****     irsend_space(WHYNTER_ZERO_SPACE);  // Always end with the LED off
+ 102              		.loc 1 50 0
+ 103 0066 40F2EE20 		movw	r0, #750
+ 104 006a FFF7FEFF 		bl	irsend_space
+ 105              	.LVL16:
+ 106 006e 38BD     		pop	{r3, r4, r5, pc}
+ 107              		.cfi_endproc
+ 108              	.LFE64:
+ 110              		.section	.text.decodeWhynter,"ax",%progbits
+ 111              		.align	1
+ 112              		.global	decodeWhynter
+ 113              		.syntax unified
+ 114              		.thumb
+ 115              		.thumb_func
+ 116              		.fpu softvfp
+ 118              	decodeWhynter:
+ 119              	.LFB65:
+ARM GAS  /tmp/ccaASiXB.s 			page 4
+
+
+  51:Src/irremote/ir_Whynter.c **** }
+  52:Src/irremote/ir_Whynter.c **** #endif
+  53:Src/irremote/ir_Whynter.c **** 
+  54:Src/irremote/ir_Whynter.c **** //+=============================================================================
+  55:Src/irremote/ir_Whynter.c **** #if DECODE_WHYNTER
+  56:Src/irremote/ir_Whynter.c **** unsigned char  decodeWhynter (struct decode_results *results)
+  57:Src/irremote/ir_Whynter.c **** {
+ 120              		.loc 1 57 0
+ 121              		.cfi_startproc
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124              	.LVL17:
+  58:Src/irremote/ir_Whynter.c **** 	long  data   = 0;
+  59:Src/irremote/ir_Whynter.c **** 	int   offset = 1;  // skip initial space
+  60:Src/irremote/ir_Whynter.c **** 
+  61:Src/irremote/ir_Whynter.c **** 	// Check we have the right amount of data
+  62:Src/irremote/ir_Whynter.c ****     if (irparams.rawlen < (2 * WHYNTER_BITS) + 6)  return FALSE ;
+ 125              		.loc 1 62 0
+ 126 0000 394B     		ldr	r3, .L31
+ 127 0002 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 128 0004 DBB2     		uxtb	r3, r3
+ 129 0006 452B     		cmp	r3, #69
+ 130 0008 01D8     		bhi	.L26
+ 131 000a 0020     		movs	r0, #0
+ 132              	.LVL18:
+ 133 000c 7047     		bx	lr
+ 134              	.LVL19:
+ 135              	.L26:
+  57:Src/irremote/ir_Whynter.c **** 	long  data   = 0;
+ 136              		.loc 1 57 0
+ 137 000e 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 138              	.LCFI1:
+ 139              		.cfi_def_cfa_offset 24
+ 140              		.cfi_offset 4, -24
+ 141              		.cfi_offset 5, -20
+ 142              		.cfi_offset 6, -16
+ 143              		.cfi_offset 7, -12
+ 144              		.cfi_offset 8, -8
+ 145              		.cfi_offset 14, -4
+ 146 0012 0446     		mov	r4, r0
+  63:Src/irremote/ir_Whynter.c **** 
+  64:Src/irremote/ir_Whynter.c **** 	// Sequence begins with a bit mark and a zero space
+  65:Src/irremote/ir_Whynter.c ****     if (!MATCH_MARK (results->rawbuf[offset++], WHYNTER_BIT_MARK  ))  return FALSE ;
+ 147              		.loc 1 65 0
+ 148 0014 0369     		ldr	r3, [r0, #16]
+ 149              	.LVL20:
+ 150 0016 5868     		ldr	r0, [r3, #4]
+ 151              	.LVL21:
+ 152 0018 40F2EE21 		movw	r1, #750
+ 153 001c FFF7FEFF 		bl	MATCH_MARK
+ 154              	.LVL22:
+ 155 0020 10B9     		cbnz	r0, .L27
+ 156 0022 0020     		movs	r0, #0
+ 157 0024 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 158              	.LVL23:
+ 159              	.L27:
+  66:Src/irremote/ir_Whynter.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], WHYNTER_ZERO_SPACE))  return FALSE ;
+ARM GAS  /tmp/ccaASiXB.s 			page 5
+
+
+ 160              		.loc 1 66 0
+ 161 0028 2369     		ldr	r3, [r4, #16]
+ 162              	.LVL24:
+ 163 002a 9868     		ldr	r0, [r3, #8]
+ 164 002c 40F2EE21 		movw	r1, #750
+ 165 0030 FFF7FEFF 		bl	MATCH_SPACE
+ 166              	.LVL25:
+ 167 0034 10B9     		cbnz	r0, .L28
+ 168 0036 0020     		movs	r0, #0
+ 169 0038 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 170              	.LVL26:
+ 171              	.L28:
+  67:Src/irremote/ir_Whynter.c **** 
+  68:Src/irremote/ir_Whynter.c **** 	// header mark and space
+  69:Src/irremote/ir_Whynter.c ****     if (!MATCH_MARK (results->rawbuf[offset++], WHYNTER_HDR_MARK ))  return FALSE ;
+ 172              		.loc 1 69 0
+ 173 003c 2369     		ldr	r3, [r4, #16]
+ 174              	.LVL27:
+ 175 003e D868     		ldr	r0, [r3, #12]
+ 176 0040 40F62231 		movw	r1, #2850
+ 177 0044 FFF7FEFF 		bl	MATCH_MARK
+ 178              	.LVL28:
+ 179 0048 10B9     		cbnz	r0, .L29
+ 180 004a 0020     		movs	r0, #0
+ 181 004c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 182              	.LVL29:
+ 183              	.L29:
+  70:Src/irremote/ir_Whynter.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], WHYNTER_HDR_SPACE))  return FALSE ;
+ 184              		.loc 1 70 0
+ 185 0050 2369     		ldr	r3, [r4, #16]
+ 186              	.LVL30:
+ 187 0052 1869     		ldr	r0, [r3, #16]
+ 188 0054 40F62231 		movw	r1, #2850
+ 189 0058 FFF7FEFF 		bl	MATCH_SPACE
+ 190              	.LVL31:
+ 191 005c B8B3     		cbz	r0, .L18
+ 192 005e 0027     		movs	r7, #0
+ 193 0060 0525     		movs	r5, #5
+ 194 0062 3E46     		mov	r6, r7
+ 195 0064 0AE0     		b	.L10
+ 196              	.LVL32:
+ 197              	.L11:
+ 198              	.LBB2:
+  71:Src/irremote/ir_Whynter.c **** 
+  72:Src/irremote/ir_Whynter.c **** 	// data bits
+  73:Src/irremote/ir_Whynter.c **** 	for (int i = 0;  i < WHYNTER_BITS;  i++) {
+  74:Src/irremote/ir_Whynter.c ****         if (!MATCH_MARK(results->rawbuf[offset++], WHYNTER_BIT_MARK))  return FALSE ;
+  75:Src/irremote/ir_Whynter.c **** 
+  76:Src/irremote/ir_Whynter.c **** 		if      (MATCH_SPACE(results->rawbuf[offset], WHYNTER_ONE_SPACE ))  data = (data << 1) | 1 ;
+  77:Src/irremote/ir_Whynter.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], WHYNTER_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 199              		.loc 1 77 0
+ 200 0066 2369     		ldr	r3, [r4, #16]
+ 201 0068 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 202 006c 40F2EE21 		movw	r1, #750
+ 203 0070 FFF7FEFF 		bl	MATCH_SPACE
+ 204              	.LVL33:
+ 205 0074 88B3     		cbz	r0, .L20
+ARM GAS  /tmp/ccaASiXB.s 			page 6
+
+
+ 206              		.loc 1 77 0 is_stmt 0 discriminator 1
+ 207 0076 7600     		lsls	r6, r6, #1
+ 208              	.LVL34:
+ 209              	.L12:
+  78:Src/irremote/ir_Whynter.c ****         else                                                                return FALSE ;
+  79:Src/irremote/ir_Whynter.c **** 		offset++;
+ 210              		.loc 1 79 0 is_stmt 1 discriminator 2
+ 211 0078 0235     		adds	r5, r5, #2
+ 212              	.LVL35:
+  73:Src/irremote/ir_Whynter.c ****         if (!MATCH_MARK(results->rawbuf[offset++], WHYNTER_BIT_MARK))  return FALSE ;
+ 213              		.loc 1 73 0 discriminator 2
+ 214 007a 0137     		adds	r7, r7, #1
+ 215              	.LVL36:
+ 216              	.L10:
+  73:Src/irremote/ir_Whynter.c ****         if (!MATCH_MARK(results->rawbuf[offset++], WHYNTER_BIT_MARK))  return FALSE ;
+ 217              		.loc 1 73 0 is_stmt 0 discriminator 1
+ 218 007c 1F2F     		cmp	r7, #31
+ 219 007e 16DC     		bgt	.L30
+  74:Src/irremote/ir_Whynter.c **** 
+ 220              		.loc 1 74 0 is_stmt 1
+ 221 0080 2369     		ldr	r3, [r4, #16]
+ 222 0082 05F10108 		add	r8, r5, #1
+ 223              	.LVL37:
+ 224 0086 53F82500 		ldr	r0, [r3, r5, lsl #2]
+ 225 008a 40F2EE21 		movw	r1, #750
+ 226 008e FFF7FEFF 		bl	MATCH_MARK
+ 227              	.LVL38:
+ 228 0092 F8B1     		cbz	r0, .L19
+  76:Src/irremote/ir_Whynter.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], WHYNTER_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 229              		.loc 1 76 0
+ 230 0094 2369     		ldr	r3, [r4, #16]
+ 231 0096 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 232 009a 40F66601 		movw	r1, #2150
+ 233 009e FFF7FEFF 		bl	MATCH_SPACE
+ 234              	.LVL39:
+ 235 00a2 0028     		cmp	r0, #0
+ 236 00a4 DFD0     		beq	.L11
+  76:Src/irremote/ir_Whynter.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], WHYNTER_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 237              		.loc 1 76 0 is_stmt 0 discriminator 1
+ 238 00a6 7600     		lsls	r6, r6, #1
+ 239              	.LVL40:
+ 240 00a8 46F00106 		orr	r6, r6, #1
+ 241              	.LVL41:
+ 242 00ac E4E7     		b	.L12
+ 243              	.LVL42:
+ 244              	.L30:
+ 245              	.LBE2:
+  80:Src/irremote/ir_Whynter.c **** 	}
+  81:Src/irremote/ir_Whynter.c **** 
+  82:Src/irremote/ir_Whynter.c **** 	// trailing mark
+  83:Src/irremote/ir_Whynter.c ****     if (!MATCH_MARK(results->rawbuf[offset], WHYNTER_BIT_MARK))  return FALSE ;
+ 246              		.loc 1 83 0 is_stmt 1
+ 247 00ae 2369     		ldr	r3, [r4, #16]
+ 248 00b0 53F82500 		ldr	r0, [r3, r5, lsl #2]
+ 249 00b4 40F2EE21 		movw	r1, #750
+ 250 00b8 FFF7FEFF 		bl	MATCH_MARK
+ 251              	.LVL43:
+ARM GAS  /tmp/ccaASiXB.s 			page 7
+
+
+ 252 00bc 80B1     		cbz	r0, .L21
+  84:Src/irremote/ir_Whynter.c **** 
+  85:Src/irremote/ir_Whynter.c **** 	// Success
+  86:Src/irremote/ir_Whynter.c **** 	results->bits = WHYNTER_BITS;
+ 253              		.loc 1 86 0
+ 254 00be 2023     		movs	r3, #32
+ 255 00c0 E360     		str	r3, [r4, #12]
+  87:Src/irremote/ir_Whynter.c **** 	results->value = data;
+ 256              		.loc 1 87 0
+ 257 00c2 A660     		str	r6, [r4, #8]
+  88:Src/irremote/ir_Whynter.c **** 	results->decode_type = WHYNTER;
+ 258              		.loc 1 88 0
+ 259 00c4 0823     		movs	r3, #8
+ 260 00c6 2370     		strb	r3, [r4]
+  89:Src/irremote/ir_Whynter.c ****     return TRUE;
+ 261              		.loc 1 89 0
+ 262 00c8 0120     		movs	r0, #1
+ 263 00ca BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 264              	.LVL44:
+ 265              	.L18:
+  70:Src/irremote/ir_Whynter.c **** 
+ 266              		.loc 1 70 0
+ 267 00ce 0020     		movs	r0, #0
+ 268 00d0 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 269              	.LVL45:
+ 270              	.L19:
+ 271              	.LBB3:
+  74:Src/irremote/ir_Whynter.c **** 
+ 272              		.loc 1 74 0
+ 273 00d4 0020     		movs	r0, #0
+ 274 00d6 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 275              	.LVL46:
+ 276              	.L20:
+  78:Src/irremote/ir_Whynter.c **** 		offset++;
+ 277              		.loc 1 78 0
+ 278 00da 0020     		movs	r0, #0
+ 279 00dc BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 280              	.LVL47:
+ 281              	.L21:
+ 282              	.LBE3:
+  83:Src/irremote/ir_Whynter.c **** 
+ 283              		.loc 1 83 0
+ 284 00e0 0020     		movs	r0, #0
+  90:Src/irremote/ir_Whynter.c **** }
+ 285              		.loc 1 90 0
+ 286 00e2 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 287              	.LVL48:
+ 288              	.L32:
+ 289 00e6 00BF     		.align	2
+ 290              	.L31:
+ 291 00e8 00000000 		.word	irparams
+ 292              		.cfi_endproc
+ 293              	.LFE65:
+ 295              		.text
+ 296              	.Letext0:
+ 297              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 298              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ARM GAS  /tmp/ccaASiXB.s 			page 8
+
+
+ 299              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 300              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 301              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 302              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 303              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 304              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 305              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 306              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 307              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/ccaASiXB.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_Whynter.c
+     /tmp/ccaASiXB.s:16     .text.sendWhynter:0000000000000000 $t
+     /tmp/ccaASiXB.s:23     .text.sendWhynter:0000000000000000 sendWhynter
+     /tmp/ccaASiXB.s:111    .text.decodeWhynter:0000000000000000 $t
+     /tmp/ccaASiXB.s:118    .text.decodeWhynter:0000000000000000 decodeWhynter
+     /tmp/ccaASiXB.s:291    .text.decodeWhynter:00000000000000e8 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE
+irparams

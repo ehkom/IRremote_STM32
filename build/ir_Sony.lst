@@ -1,0 +1,418 @@
+ARM GAS  /tmp/cctO6rHH.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_Sony.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendSony,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendSony
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendSony:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_Sony.c"
+   1:Src/irremote/ir_Sony.c **** #include "IRremote.h"
+   2:Src/irremote/ir_Sony.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_Sony.c **** 
+   4:Src/irremote/ir_Sony.c **** //==============================================================================
+   5:Src/irremote/ir_Sony.c **** //                           SSSS   OOO   N   N  Y   Y
+   6:Src/irremote/ir_Sony.c **** //                          S      O   O  NN  N   Y Y
+   7:Src/irremote/ir_Sony.c **** //                           SSS   O   O  N N N    Y
+   8:Src/irremote/ir_Sony.c **** //                              S  O   O  N  NN    Y
+   9:Src/irremote/ir_Sony.c **** //                          SSSS    OOO   N   N    Y
+  10:Src/irremote/ir_Sony.c **** //==============================================================================
+  11:Src/irremote/ir_Sony.c **** 
+  12:Src/irremote/ir_Sony.c **** #define SONY_BITS                   12
+  13:Src/irremote/ir_Sony.c **** #define SONY_HDR_MARK             2400
+  14:Src/irremote/ir_Sony.c **** #define SONY_HDR_SPACE             600
+  15:Src/irremote/ir_Sony.c **** #define SONY_ONE_MARK             1200
+  16:Src/irremote/ir_Sony.c **** #define SONY_ZERO_MARK             600
+  17:Src/irremote/ir_Sony.c **** #define SONY_RPT_LENGTH          45000
+  18:Src/irremote/ir_Sony.c **** #define SONY_DOUBLE_SPACE_USECS    500  // usually ssee 713 - not using ticks as get number wraprou
+  19:Src/irremote/ir_Sony.c **** 
+  20:Src/irremote/ir_Sony.c **** //+=============================================================================
+  21:Src/irremote/ir_Sony.c **** #if SEND_SONY
+  22:Src/irremote/ir_Sony.c **** void  sendSony (unsigned long data,  int nbits)
+  23:Src/irremote/ir_Sony.c **** {
+  26              		.loc 1 23 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 38B5     		push	{r3, r4, r5, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 3, -16
+  35              		.cfi_offset 4, -12
+ARM GAS  /tmp/cctO6rHH.s 			page 2
+
+
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39 0004 0C46     		mov	r4, r1
+  24:Src/irremote/ir_Sony.c **** 	// Set IR carrier frequency
+  25:Src/irremote/ir_Sony.c ****     irsend_enableIROut(40);
+  40              		.loc 1 25 0
+  41 0006 2820     		movs	r0, #40
+  42              	.LVL1:
+  43 0008 FFF7FEFF 		bl	irsend_enableIROut
+  44              	.LVL2:
+  26:Src/irremote/ir_Sony.c **** 
+  27:Src/irremote/ir_Sony.c **** 	// Header
+  28:Src/irremote/ir_Sony.c ****     irsend_mark(SONY_HDR_MARK);
+  45              		.loc 1 28 0
+  46 000c 4FF41660 		mov	r0, #2400
+  47 0010 FFF7FEFF 		bl	irsend_mark
+  48              	.LVL3:
+  29:Src/irremote/ir_Sony.c ****     irsend_space(SONY_HDR_SPACE);
+  49              		.loc 1 29 0
+  50 0014 4FF41670 		mov	r0, #600
+  51 0018 FFF7FEFF 		bl	irsend_space
+  52              	.LVL4:
+  53              	.LBB2:
+  30:Src/irremote/ir_Sony.c **** 
+  31:Src/irremote/ir_Sony.c **** 	// Data
+  32:Src/irremote/ir_Sony.c **** 	for (unsigned long  mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+  54              		.loc 1 32 0
+  55 001c 631E     		subs	r3, r4, #1
+  56 001e 0124     		movs	r4, #1
+  57              	.LVL5:
+  58 0020 9C40     		lsls	r4, r4, r3
+  59              	.LVL6:
+  60 0022 08E0     		b	.L2
+  61              	.LVL7:
+  62              	.L3:
+  33:Src/irremote/ir_Sony.c **** 		if (data & mask) {
+  34:Src/irremote/ir_Sony.c ****             irsend_mark(SONY_ONE_MARK);
+  35:Src/irremote/ir_Sony.c ****             irsend_space(SONY_HDR_SPACE);
+  36:Src/irremote/ir_Sony.c **** 		} else {
+  37:Src/irremote/ir_Sony.c ****             irsend_mark(SONY_ZERO_MARK);
+  63              		.loc 1 37 0
+  64 0024 4FF41670 		mov	r0, #600
+  65 0028 FFF7FEFF 		bl	irsend_mark
+  66              	.LVL8:
+  38:Src/irremote/ir_Sony.c ****             irsend_space(SONY_HDR_SPACE);
+  67              		.loc 1 38 0
+  68 002c 4FF41670 		mov	r0, #600
+  69 0030 FFF7FEFF 		bl	irsend_space
+  70              	.LVL9:
+  71              	.L4:
+  32:Src/irremote/ir_Sony.c **** 		if (data & mask) {
+  72              		.loc 1 32 0 discriminator 2
+  73 0034 6408     		lsrs	r4, r4, #1
+  74              	.LVL10:
+  75              	.L2:
+  32:Src/irremote/ir_Sony.c **** 		if (data & mask) {
+ARM GAS  /tmp/cctO6rHH.s 			page 3
+
+
+  76              		.loc 1 32 0 is_stmt 0 discriminator 1
+  77 0036 54B1     		cbz	r4, .L7
+  33:Src/irremote/ir_Sony.c **** 		if (data & mask) {
+  78              		.loc 1 33 0 is_stmt 1
+  79 0038 2C42     		tst	r4, r5
+  80 003a F3D0     		beq	.L3
+  34:Src/irremote/ir_Sony.c ****             irsend_space(SONY_HDR_SPACE);
+  81              		.loc 1 34 0
+  82 003c 4FF49660 		mov	r0, #1200
+  83 0040 FFF7FEFF 		bl	irsend_mark
+  84              	.LVL11:
+  35:Src/irremote/ir_Sony.c **** 		} else {
+  85              		.loc 1 35 0
+  86 0044 4FF41670 		mov	r0, #600
+  87 0048 FFF7FEFF 		bl	irsend_space
+  88              	.LVL12:
+  89 004c F2E7     		b	.L4
+  90              	.L7:
+  91              	.LBE2:
+  39:Src/irremote/ir_Sony.c ****     	}
+  40:Src/irremote/ir_Sony.c ****   	}
+  41:Src/irremote/ir_Sony.c **** 
+  42:Src/irremote/ir_Sony.c **** 	// We will have ended with LED off
+  43:Src/irremote/ir_Sony.c **** }
+  92              		.loc 1 43 0
+  93 004e 38BD     		pop	{r3, r4, r5, pc}
+  94              		.cfi_endproc
+  95              	.LFE64:
+  97              		.section	.text.decodeSony,"ax",%progbits
+  98              		.align	1
+  99              		.global	decodeSony
+ 100              		.syntax unified
+ 101              		.thumb
+ 102              		.thumb_func
+ 103              		.fpu softvfp
+ 105              	decodeSony:
+ 106              	.LFB65:
+  44:Src/irremote/ir_Sony.c **** #endif
+  45:Src/irremote/ir_Sony.c **** 
+  46:Src/irremote/ir_Sony.c **** //+=============================================================================
+  47:Src/irremote/ir_Sony.c **** #if DECODE_SONY
+  48:Src/irremote/ir_Sony.c **** unsigned char  decodeSony (struct decode_results *results)
+  49:Src/irremote/ir_Sony.c **** {
+ 107              		.loc 1 49 0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111              	.LVL13:
+ 112 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 113              	.LCFI1:
+ 114              		.cfi_def_cfa_offset 24
+ 115              		.cfi_offset 3, -24
+ 116              		.cfi_offset 4, -20
+ 117              		.cfi_offset 5, -16
+ 118              		.cfi_offset 6, -12
+ 119              		.cfi_offset 7, -8
+ 120              		.cfi_offset 14, -4
+ARM GAS  /tmp/cctO6rHH.s 			page 4
+
+
+ 121              	.LVL14:
+  50:Src/irremote/ir_Sony.c **** 	long  data   = 0;
+  51:Src/irremote/ir_Sony.c **** 	int   offset = 0;  // Dont skip first space, check its size
+  52:Src/irremote/ir_Sony.c **** 
+  53:Src/irremote/ir_Sony.c ****     if (irparams.rawlen < (2 * SONY_BITS) + 2)  return FALSE ;
+ 122              		.loc 1 53 0
+ 123 0002 2C4B     		ldr	r3, .L23
+ 124 0004 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 125 0006 DBB2     		uxtb	r3, r3
+ 126 0008 192B     		cmp	r3, #25
+ 127 000a 4DD9     		bls	.L17
+  54:Src/irremote/ir_Sony.c **** 
+  55:Src/irremote/ir_Sony.c **** 	// Some Sony's deliver repeats fast after first
+  56:Src/irremote/ir_Sony.c **** 	// unfortunately can't spot difference from of repeat from two fast clicks
+  57:Src/irremote/ir_Sony.c **** 	if (results->rawbuf[offset] < SONY_DOUBLE_SPACE_USECS) {
+ 128              		.loc 1 57 0
+ 129 000c 0369     		ldr	r3, [r0, #16]
+ 130 000e 1A68     		ldr	r2, [r3]
+ 131 0010 B2F5FA7F 		cmp	r2, #500
+ 132 0014 08D2     		bcs	.L10
+  58:Src/irremote/ir_Sony.c **** 		// Serial.print("IR Gap found: ");
+  59:Src/irremote/ir_Sony.c **** 		results->bits = 0;
+ 133              		.loc 1 59 0
+ 134 0016 0023     		movs	r3, #0
+ 135 0018 C360     		str	r3, [r0, #12]
+  60:Src/irremote/ir_Sony.c **** 		results->value = REPEAT;
+ 136              		.loc 1 60 0
+ 137 001a 4FF0FF33 		mov	r3, #-1
+ 138 001e 8360     		str	r3, [r0, #8]
+  61:Src/irremote/ir_Sony.c **** 
+  62:Src/irremote/ir_Sony.c **** #	ifdef DECODE_SANYO
+  63:Src/irremote/ir_Sony.c **** 		results->decode_type = SANYO;
+ 139              		.loc 1 63 0
+ 140 0020 0B23     		movs	r3, #11
+ 141 0022 0370     		strb	r3, [r0]
+  64:Src/irremote/ir_Sony.c **** #	else
+  65:Src/irremote/ir_Sony.c **** 		results->decode_type = UNKNOWN;
+  66:Src/irremote/ir_Sony.c **** #	endif
+  67:Src/irremote/ir_Sony.c **** 
+  68:Src/irremote/ir_Sony.c ****         return TRUE;
+ 142              		.loc 1 68 0
+ 143 0024 0120     		movs	r0, #1
+ 144              	.LVL15:
+ 145 0026 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 146              	.LVL16:
+ 147              	.L10:
+ 148 0028 0546     		mov	r5, r0
+ 149              	.LVL17:
+  69:Src/irremote/ir_Sony.c **** 	}
+  70:Src/irremote/ir_Sony.c **** 	offset++;
+  71:Src/irremote/ir_Sony.c **** 
+  72:Src/irremote/ir_Sony.c **** 	// Initial mark
+  73:Src/irremote/ir_Sony.c ****     if (!MATCH_MARK(results->rawbuf[offset++], SONY_HDR_MARK))  return FALSE ;
+ 150              		.loc 1 73 0
+ 151 002a 5868     		ldr	r0, [r3, #4]
+ 152              	.LVL18:
+ 153 002c 4FF41661 		mov	r1, #2400
+ARM GAS  /tmp/cctO6rHH.s 			page 5
+
+
+ 154 0030 FFF7FEFF 		bl	MATCH_MARK
+ 155              	.LVL19:
+ 156 0034 0028     		cmp	r0, #0
+ 157 0036 39D0     		beq	.L18
+ 158 0038 0224     		movs	r4, #2
+ 159 003a 0026     		movs	r6, #0
+ 160 003c 09E0     		b	.L11
+ 161              	.LVL20:
+ 162              	.L13:
+  74:Src/irremote/ir_Sony.c **** 
+  75:Src/irremote/ir_Sony.c **** 	while (offset + 1 < irparams.rawlen) {
+  76:Src/irremote/ir_Sony.c **** 		if (!MATCH_SPACE(results->rawbuf[offset++], SONY_HDR_SPACE))  break ;
+  77:Src/irremote/ir_Sony.c **** 
+  78:Src/irremote/ir_Sony.c **** 		if      (MATCH_MARK(results->rawbuf[offset], SONY_ONE_MARK))   data = (data << 1) | 1 ;
+  79:Src/irremote/ir_Sony.c **** 		else if (MATCH_MARK(results->rawbuf[offset], SONY_ZERO_MARK))  data = (data << 1) | 0 ;
+ 163              		.loc 1 79 0
+ 164 003e 2B69     		ldr	r3, [r5, #16]
+ 165 0040 53F82700 		ldr	r0, [r3, r7, lsl #2]
+ 166 0044 4FF41671 		mov	r1, #600
+ 167 0048 FFF7FEFF 		bl	MATCH_MARK
+ 168              	.LVL21:
+ 169 004c 80B3     		cbz	r0, .L20
+ 170              		.loc 1 79 0 is_stmt 0 discriminator 1
+ 171 004e 7600     		lsls	r6, r6, #1
+ 172              	.LVL22:
+ 173              	.L14:
+  80:Src/irremote/ir_Sony.c ****         else                                                           return FALSE ;
+  81:Src/irremote/ir_Sony.c **** 		offset++;
+ 174              		.loc 1 81 0 is_stmt 1
+ 175 0050 0234     		adds	r4, r4, #2
+ 176              	.LVL23:
+ 177              	.L11:
+  75:Src/irremote/ir_Sony.c **** 		if (!MATCH_SPACE(results->rawbuf[offset++], SONY_HDR_SPACE))  break ;
+ 178              		.loc 1 75 0
+ 179 0052 671C     		adds	r7, r4, #1
+ 180 0054 174B     		ldr	r3, .L23
+ 181 0056 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 182 0058 DBB2     		uxtb	r3, r3
+ 183 005a 9F42     		cmp	r7, r3
+ 184 005c 15DA     		bge	.L12
+  76:Src/irremote/ir_Sony.c **** 
+ 185              		.loc 1 76 0
+ 186 005e 2B69     		ldr	r3, [r5, #16]
+ 187              	.LVL24:
+ 188 0060 53F82400 		ldr	r0, [r3, r4, lsl #2]
+ 189 0064 4FF41671 		mov	r1, #600
+ 190 0068 FFF7FEFF 		bl	MATCH_SPACE
+ 191              	.LVL25:
+ 192 006c 60B1     		cbz	r0, .L19
+  78:Src/irremote/ir_Sony.c **** 		else if (MATCH_MARK(results->rawbuf[offset], SONY_ZERO_MARK))  data = (data << 1) | 0 ;
+ 193              		.loc 1 78 0
+ 194 006e 2B69     		ldr	r3, [r5, #16]
+ 195 0070 53F82700 		ldr	r0, [r3, r7, lsl #2]
+ 196 0074 4FF49661 		mov	r1, #1200
+ 197 0078 FFF7FEFF 		bl	MATCH_MARK
+ 198              	.LVL26:
+ 199 007c 0028     		cmp	r0, #0
+ARM GAS  /tmp/cctO6rHH.s 			page 6
+
+
+ 200 007e DED0     		beq	.L13
+  78:Src/irremote/ir_Sony.c **** 		else if (MATCH_MARK(results->rawbuf[offset], SONY_ZERO_MARK))  data = (data << 1) | 0 ;
+ 201              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 202 0080 7600     		lsls	r6, r6, #1
+ 203              	.LVL27:
+ 204 0082 46F00106 		orr	r6, r6, #1
+ 205              	.LVL28:
+ 206 0086 E3E7     		b	.L14
+ 207              	.L19:
+  76:Src/irremote/ir_Sony.c **** 
+ 208              		.loc 1 76 0 is_stmt 1
+ 209 0088 3C46     		mov	r4, r7
+ 210              	.LVL29:
+ 211              	.L12:
+  82:Src/irremote/ir_Sony.c **** 	}
+  83:Src/irremote/ir_Sony.c **** 
+  84:Src/irremote/ir_Sony.c **** 	// Success
+  85:Src/irremote/ir_Sony.c **** 	results->bits = (offset - 1) / 2;
+ 212              		.loc 1 85 0
+ 213 008a 013C     		subs	r4, r4, #1
+ 214              	.LVL30:
+ 215 008c 04EBD474 		add	r4, r4, r4, lsr #31
+ 216              	.LVL31:
+ 217 0090 6410     		asrs	r4, r4, #1
+ 218 0092 EC60     		str	r4, [r5, #12]
+  86:Src/irremote/ir_Sony.c **** 	if (results->bits < 12) {
+ 219              		.loc 1 86 0
+ 220 0094 0B2C     		cmp	r4, #11
+ 221 0096 04DD     		ble	.L22
+  87:Src/irremote/ir_Sony.c **** 		results->bits = 0;
+  88:Src/irremote/ir_Sony.c ****         return FALSE;
+  89:Src/irremote/ir_Sony.c **** 	}
+  90:Src/irremote/ir_Sony.c **** 	results->value       = data;
+ 222              		.loc 1 90 0
+ 223 0098 AE60     		str	r6, [r5, #8]
+  91:Src/irremote/ir_Sony.c **** 	results->decode_type = SONY;
+ 224              		.loc 1 91 0
+ 225 009a 0423     		movs	r3, #4
+ 226 009c 2B70     		strb	r3, [r5]
+  92:Src/irremote/ir_Sony.c ****     return TRUE;
+ 227              		.loc 1 92 0
+ 228 009e 0120     		movs	r0, #1
+ 229 00a0 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 230              	.LVL32:
+ 231              	.L22:
+  87:Src/irremote/ir_Sony.c **** 		results->bits = 0;
+ 232              		.loc 1 87 0
+ 233 00a2 0020     		movs	r0, #0
+ 234 00a4 E860     		str	r0, [r5, #12]
+  88:Src/irremote/ir_Sony.c **** 	}
+ 235              		.loc 1 88 0
+ 236 00a6 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 237              	.LVL33:
+ 238              	.L17:
+  53:Src/irremote/ir_Sony.c **** 
+ 239              		.loc 1 53 0
+ 240 00a8 0020     		movs	r0, #0
+ARM GAS  /tmp/cctO6rHH.s 			page 7
+
+
+ 241              	.LVL34:
+ 242 00aa F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 243              	.LVL35:
+ 244              	.L18:
+  73:Src/irremote/ir_Sony.c **** 
+ 245              		.loc 1 73 0
+ 246 00ac 0020     		movs	r0, #0
+ 247 00ae F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 248              	.LVL36:
+ 249              	.L20:
+  80:Src/irremote/ir_Sony.c **** 		offset++;
+ 250              		.loc 1 80 0
+ 251 00b0 0020     		movs	r0, #0
+  93:Src/irremote/ir_Sony.c **** }
+ 252              		.loc 1 93 0
+ 253 00b2 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 254              	.LVL37:
+ 255              	.L24:
+ 256              		.align	2
+ 257              	.L23:
+ 258 00b4 00000000 		.word	irparams
+ 259              		.cfi_endproc
+ 260              	.LFE65:
+ 262              		.text
+ 263              	.Letext0:
+ 264              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 265              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 266              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 267              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 268              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 269              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 270              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 271              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 272              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 273              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 274              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/cctO6rHH.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_Sony.c
+     /tmp/cctO6rHH.s:16     .text.sendSony:0000000000000000 $t
+     /tmp/cctO6rHH.s:23     .text.sendSony:0000000000000000 sendSony
+     /tmp/cctO6rHH.s:98     .text.decodeSony:0000000000000000 $t
+     /tmp/cctO6rHH.s:105    .text.decodeSony:0000000000000000 decodeSony
+     /tmp/cctO6rHH.s:258    .text.decodeSony:00000000000000b4 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE
+irparams

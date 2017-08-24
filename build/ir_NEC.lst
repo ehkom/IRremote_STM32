@@ -1,0 +1,459 @@
+ARM GAS  /tmp/cct0dzmL.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_NEC.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendNEC,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendNEC
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendNEC:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_NEC.c"
+   1:Src/irremote/ir_NEC.c **** #include "IRremote.h"
+   2:Src/irremote/ir_NEC.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_NEC.c **** 
+   4:Src/irremote/ir_NEC.c **** //==============================================================================
+   5:Src/irremote/ir_NEC.c **** //                           N   N  EEEEE   CCCC
+   6:Src/irremote/ir_NEC.c **** //                           NN  N  E      C
+   7:Src/irremote/ir_NEC.c **** //                           N N N  EEE    C
+   8:Src/irremote/ir_NEC.c **** //                           N  NN  E      C
+   9:Src/irremote/ir_NEC.c **** //                           N   N  EEEEE   CCCC
+  10:Src/irremote/ir_NEC.c **** //==============================================================================
+  11:Src/irremote/ir_NEC.c **** 
+  12:Src/irremote/ir_NEC.c **** #define NEC_BITS          32
+  13:Src/irremote/ir_NEC.c **** #define NEC_HDR_MARK    9000
+  14:Src/irremote/ir_NEC.c **** #define NEC_HDR_SPACE   4500
+  15:Src/irremote/ir_NEC.c **** #define NEC_BIT_MARK     560
+  16:Src/irremote/ir_NEC.c **** #define NEC_ONE_SPACE   1690
+  17:Src/irremote/ir_NEC.c **** #define NEC_ZERO_SPACE   560
+  18:Src/irremote/ir_NEC.c **** #define NEC_RPT_SPACE   2250
+  19:Src/irremote/ir_NEC.c **** 
+  20:Src/irremote/ir_NEC.c **** //+=============================================================================
+  21:Src/irremote/ir_NEC.c **** #if SEND_NEC
+  22:Src/irremote/ir_NEC.c **** void  sendNEC (unsigned long data,  int nbits)
+  23:Src/irremote/ir_NEC.c **** {
+  26              		.loc 1 23 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 38B5     		push	{r3, r4, r5, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 3, -16
+  35              		.cfi_offset 4, -12
+ARM GAS  /tmp/cct0dzmL.s 			page 2
+
+
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39 0004 0C46     		mov	r4, r1
+  24:Src/irremote/ir_NEC.c **** 	// Set IR carrier frequency
+  25:Src/irremote/ir_NEC.c ****     irsend_enableIROut(38);
+  40              		.loc 1 25 0
+  41 0006 2620     		movs	r0, #38
+  42              	.LVL1:
+  43 0008 FFF7FEFF 		bl	irsend_enableIROut
+  44              	.LVL2:
+  26:Src/irremote/ir_NEC.c **** 
+  27:Src/irremote/ir_NEC.c **** 	// Header
+  28:Src/irremote/ir_NEC.c ****     irsend_mark(NEC_HDR_MARK);
+  45              		.loc 1 28 0
+  46 000c 42F22830 		movw	r0, #9000
+  47 0010 FFF7FEFF 		bl	irsend_mark
+  48              	.LVL3:
+  29:Src/irremote/ir_NEC.c ****     irsend_space(NEC_HDR_SPACE);
+  49              		.loc 1 29 0
+  50 0014 41F29410 		movw	r0, #4500
+  51 0018 FFF7FEFF 		bl	irsend_space
+  52              	.LVL4:
+  30:Src/irremote/ir_NEC.c **** 
+  31:Src/irremote/ir_NEC.c **** 	// Data
+  32:Src/irremote/ir_NEC.c ****     unsigned long  mask;
+  33:Src/irremote/ir_NEC.c ****     for (mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+  53              		.loc 1 33 0
+  54 001c 631E     		subs	r3, r4, #1
+  55 001e 0124     		movs	r4, #1
+  56              	.LVL5:
+  57 0020 9C40     		lsls	r4, r4, r3
+  58              	.LVL6:
+  59 0022 08E0     		b	.L2
+  60              	.LVL7:
+  61              	.L3:
+  34:Src/irremote/ir_NEC.c **** 		if (data & mask) {
+  35:Src/irremote/ir_NEC.c ****             irsend_mark(NEC_BIT_MARK);
+  36:Src/irremote/ir_NEC.c ****             irsend_space(NEC_ONE_SPACE);
+  37:Src/irremote/ir_NEC.c **** 		} else {
+  38:Src/irremote/ir_NEC.c ****             irsend_mark(NEC_BIT_MARK);
+  62              		.loc 1 38 0
+  63 0024 4FF40C70 		mov	r0, #560
+  64 0028 FFF7FEFF 		bl	irsend_mark
+  65              	.LVL8:
+  39:Src/irremote/ir_NEC.c ****             irsend_space(NEC_ZERO_SPACE);
+  66              		.loc 1 39 0
+  67 002c 4FF40C70 		mov	r0, #560
+  68 0030 FFF7FEFF 		bl	irsend_space
+  69              	.LVL9:
+  70              	.L4:
+  33:Src/irremote/ir_NEC.c **** 		if (data & mask) {
+  71              		.loc 1 33 0 discriminator 2
+  72 0034 6408     		lsrs	r4, r4, #1
+  73              	.LVL10:
+  74              	.L2:
+  33:Src/irremote/ir_NEC.c **** 		if (data & mask) {
+ARM GAS  /tmp/cct0dzmL.s 			page 3
+
+
+  75              		.loc 1 33 0 is_stmt 0 discriminator 1
+  76 0036 54B1     		cbz	r4, .L7
+  34:Src/irremote/ir_NEC.c **** 		if (data & mask) {
+  77              		.loc 1 34 0 is_stmt 1
+  78 0038 2C42     		tst	r4, r5
+  79 003a F3D0     		beq	.L3
+  35:Src/irremote/ir_NEC.c ****             irsend_space(NEC_ONE_SPACE);
+  80              		.loc 1 35 0
+  81 003c 4FF40C70 		mov	r0, #560
+  82 0040 FFF7FEFF 		bl	irsend_mark
+  83              	.LVL11:
+  36:Src/irremote/ir_NEC.c **** 		} else {
+  84              		.loc 1 36 0
+  85 0044 40F29A60 		movw	r0, #1690
+  86 0048 FFF7FEFF 		bl	irsend_space
+  87              	.LVL12:
+  88 004c F2E7     		b	.L4
+  89              	.L7:
+  40:Src/irremote/ir_NEC.c **** 		}
+  41:Src/irremote/ir_NEC.c **** 	}
+  42:Src/irremote/ir_NEC.c **** 
+  43:Src/irremote/ir_NEC.c **** 	// Footer
+  44:Src/irremote/ir_NEC.c ****     irsend_mark(NEC_BIT_MARK);
+  90              		.loc 1 44 0
+  91 004e 4FF40C70 		mov	r0, #560
+  92 0052 FFF7FEFF 		bl	irsend_mark
+  93              	.LVL13:
+  45:Src/irremote/ir_NEC.c ****     irsend_space(0);  // Always end with the LED off
+  94              		.loc 1 45 0
+  95 0056 0020     		movs	r0, #0
+  96 0058 FFF7FEFF 		bl	irsend_space
+  97              	.LVL14:
+  98 005c 38BD     		pop	{r3, r4, r5, pc}
+  99              		.cfi_endproc
+ 100              	.LFE64:
+ 102              		.section	.text.decodeNEC,"ax",%progbits
+ 103              		.align	1
+ 104              		.global	decodeNEC
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ 108              		.fpu softvfp
+ 110              	decodeNEC:
+ 111              	.LFB65:
+  46:Src/irremote/ir_NEC.c **** }
+  47:Src/irremote/ir_NEC.c **** #endif
+  48:Src/irremote/ir_NEC.c **** 
+  49:Src/irremote/ir_NEC.c **** //+=============================================================================
+  50:Src/irremote/ir_NEC.c **** // NECs have a repeat only 4 items long
+  51:Src/irremote/ir_NEC.c **** //
+  52:Src/irremote/ir_NEC.c **** #if DECODE_NEC
+  53:Src/irremote/ir_NEC.c **** unsigned char  decodeNEC (struct decode_results *results)
+  54:Src/irremote/ir_NEC.c **** {
+ 112              		.loc 1 54 0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/cct0dzmL.s 			page 4
+
+
+ 116              	.LVL15:
+ 117 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 118              	.LCFI1:
+ 119              		.cfi_def_cfa_offset 24
+ 120              		.cfi_offset 4, -24
+ 121              		.cfi_offset 5, -20
+ 122              		.cfi_offset 6, -16
+ 123              		.cfi_offset 7, -12
+ 124              		.cfi_offset 8, -8
+ 125              		.cfi_offset 14, -4
+ 126 0004 0546     		mov	r5, r0
+ 127              	.LVL16:
+  55:Src/irremote/ir_NEC.c **** 	long  data   = 0;  // We decode in to here; Start with nothing
+  56:Src/irremote/ir_NEC.c **** 	int   offset = 1;  // Index in to results; Skip first entry!?
+  57:Src/irremote/ir_NEC.c **** 
+  58:Src/irremote/ir_NEC.c **** 	// Check header "mark"
+  59:Src/irremote/ir_NEC.c ****     if (!MATCH_MARK(results->rawbuf[offset], NEC_HDR_MARK))  return FALSE ;
+ 128              		.loc 1 59 0
+ 129 0006 0369     		ldr	r3, [r0, #16]
+ 130 0008 5868     		ldr	r0, [r3, #4]
+ 131              	.LVL17:
+ 132 000a 42F22831 		movw	r1, #9000
+ 133 000e FFF7FEFF 		bl	MATCH_MARK
+ 134              	.LVL18:
+ 135 0012 0028     		cmp	r0, #0
+ 136 0014 5DD0     		beq	.L15
+ 137              	.LVL19:
+  60:Src/irremote/ir_NEC.c **** 	offset++;
+  61:Src/irremote/ir_NEC.c **** 
+  62:Src/irremote/ir_NEC.c **** 	// Check for repeat
+  63:Src/irremote/ir_NEC.c **** 	if ( (irparams.rawlen == 4)
+ 138              		.loc 1 63 0
+ 139 0016 354B     		ldr	r3, .L24
+ 140 0018 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 141 001a DBB2     		uxtb	r3, r3
+ 142 001c 042B     		cmp	r3, #4
+ 143 001e 07D0     		beq	.L21
+ 144              	.L10:
+  64:Src/irremote/ir_NEC.c **** 	    && MATCH_SPACE(results->rawbuf[offset  ], NEC_RPT_SPACE)
+  65:Src/irremote/ir_NEC.c **** 	    && MATCH_MARK (results->rawbuf[offset+1], NEC_BIT_MARK )
+  66:Src/irremote/ir_NEC.c **** 	   ) {
+  67:Src/irremote/ir_NEC.c **** 		results->bits        = 0;
+  68:Src/irremote/ir_NEC.c **** 		results->value       = REPEAT;
+  69:Src/irremote/ir_NEC.c **** 		results->decode_type = NEC;
+  70:Src/irremote/ir_NEC.c ****         return TRUE;
+  71:Src/irremote/ir_NEC.c **** 	}
+  72:Src/irremote/ir_NEC.c **** 
+  73:Src/irremote/ir_NEC.c **** 	// Check we have enough data
+  74:Src/irremote/ir_NEC.c ****     if (irparams.rawlen < (2 * NEC_BITS) + 4)  return FALSE ;
+ 145              		.loc 1 74 0
+ 146 0020 324B     		ldr	r3, .L24
+ 147 0022 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 148 0024 DBB2     		uxtb	r3, r3
+ 149 0026 432B     		cmp	r3, #67
+ 150 0028 1CD8     		bhi	.L22
+ 151 002a 0020     		movs	r0, #0
+ 152 002c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ARM GAS  /tmp/cct0dzmL.s 			page 5
+
+
+ 153              	.LVL20:
+ 154              	.L21:
+  64:Src/irremote/ir_NEC.c **** 	    && MATCH_SPACE(results->rawbuf[offset  ], NEC_RPT_SPACE)
+ 155              		.loc 1 64 0
+ 156 0030 2B69     		ldr	r3, [r5, #16]
+ 157 0032 9868     		ldr	r0, [r3, #8]
+ 158 0034 40F6CA01 		movw	r1, #2250
+ 159 0038 FFF7FEFF 		bl	MATCH_SPACE
+ 160              	.LVL21:
+ 161 003c 0028     		cmp	r0, #0
+ 162 003e EFD0     		beq	.L10
+  65:Src/irremote/ir_NEC.c **** 	   ) {
+ 163              		.loc 1 65 0
+ 164 0040 2B69     		ldr	r3, [r5, #16]
+ 165 0042 D868     		ldr	r0, [r3, #12]
+ 166 0044 4FF40C71 		mov	r1, #560
+ 167 0048 FFF7FEFF 		bl	MATCH_MARK
+ 168              	.LVL22:
+ 169 004c 0028     		cmp	r0, #0
+ 170 004e E7D0     		beq	.L10
+  67:Src/irremote/ir_NEC.c **** 		results->value       = REPEAT;
+ 171              		.loc 1 67 0
+ 172 0050 0023     		movs	r3, #0
+ 173 0052 EB60     		str	r3, [r5, #12]
+  68:Src/irremote/ir_NEC.c **** 		results->decode_type = NEC;
+ 174              		.loc 1 68 0
+ 175 0054 4FF0FF33 		mov	r3, #-1
+ 176 0058 AB60     		str	r3, [r5, #8]
+  69:Src/irremote/ir_NEC.c ****         return TRUE;
+ 177              		.loc 1 69 0
+ 178 005a 0323     		movs	r3, #3
+ 179 005c 2B70     		strb	r3, [r5]
+  70:Src/irremote/ir_NEC.c **** 	}
+ 180              		.loc 1 70 0
+ 181 005e 0120     		movs	r0, #1
+ 182 0060 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 183              	.LVL23:
+ 184              	.L22:
+  75:Src/irremote/ir_NEC.c **** 
+  76:Src/irremote/ir_NEC.c **** 	// Check header "space"
+  77:Src/irremote/ir_NEC.c ****     if (!MATCH_SPACE(results->rawbuf[offset], NEC_HDR_SPACE))  return FALSE ;
+ 185              		.loc 1 77 0
+ 186 0064 2B69     		ldr	r3, [r5, #16]
+ 187 0066 9868     		ldr	r0, [r3, #8]
+ 188 0068 41F29411 		movw	r1, #4500
+ 189 006c FFF7FEFF 		bl	MATCH_SPACE
+ 190              	.LVL24:
+ 191 0070 90B3     		cbz	r0, .L17
+ 192 0072 0027     		movs	r7, #0
+ 193 0074 0324     		movs	r4, #3
+ 194 0076 3E46     		mov	r6, r7
+ 195 0078 0AE0     		b	.L11
+ 196              	.LVL25:
+ 197              	.L12:
+ 198              	.LBB2:
+  78:Src/irremote/ir_NEC.c **** 	offset++;
+  79:Src/irremote/ir_NEC.c **** 
+ARM GAS  /tmp/cct0dzmL.s 			page 6
+
+
+  80:Src/irremote/ir_NEC.c **** 	// Build the data
+  81:Src/irremote/ir_NEC.c **** 	for (int i = 0;  i < NEC_BITS;  i++) {
+  82:Src/irremote/ir_NEC.c **** 		// Check data "mark"
+  83:Src/irremote/ir_NEC.c ****         if (!MATCH_MARK(results->rawbuf[offset], NEC_BIT_MARK))  return FALSE ;
+  84:Src/irremote/ir_NEC.c **** 		offset++;
+  85:Src/irremote/ir_NEC.c ****         // Suppend this bit
+  86:Src/irremote/ir_NEC.c **** 		if      (MATCH_SPACE(results->rawbuf[offset], NEC_ONE_SPACE ))  data = (data << 1) | 1 ;
+  87:Src/irremote/ir_NEC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], NEC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 199              		.loc 1 87 0
+ 200 007a 2B69     		ldr	r3, [r5, #16]
+ 201 007c 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 202 0080 4FF40C71 		mov	r1, #560
+ 203 0084 FFF7FEFF 		bl	MATCH_SPACE
+ 204              	.LVL26:
+ 205 0088 60B3     		cbz	r0, .L19
+ 206              		.loc 1 87 0 is_stmt 0 discriminator 1
+ 207 008a 7600     		lsls	r6, r6, #1
+ 208              	.LVL27:
+ 209              	.L13:
+  88:Src/irremote/ir_NEC.c ****         else                                                            return FALSE ;
+  89:Src/irremote/ir_NEC.c **** 		offset++;
+ 210              		.loc 1 89 0 is_stmt 1 discriminator 2
+ 211 008c 0234     		adds	r4, r4, #2
+ 212              	.LVL28:
+  81:Src/irremote/ir_NEC.c **** 		// Check data "mark"
+ 213              		.loc 1 81 0 discriminator 2
+ 214 008e 0137     		adds	r7, r7, #1
+ 215              	.LVL29:
+ 216              	.L11:
+  81:Src/irremote/ir_NEC.c **** 		// Check data "mark"
+ 217              		.loc 1 81 0 is_stmt 0 discriminator 1
+ 218 0090 1F2F     		cmp	r7, #31
+ 219 0092 16DC     		bgt	.L23
+  83:Src/irremote/ir_NEC.c **** 		offset++;
+ 220              		.loc 1 83 0 is_stmt 1
+ 221 0094 2B69     		ldr	r3, [r5, #16]
+ 222 0096 53F82400 		ldr	r0, [r3, r4, lsl #2]
+ 223 009a 4FF40C71 		mov	r1, #560
+ 224 009e FFF7FEFF 		bl	MATCH_MARK
+ 225              	.LVL30:
+ 226 00a2 E0B1     		cbz	r0, .L18
+  84:Src/irremote/ir_NEC.c ****         // Suppend this bit
+ 227              		.loc 1 84 0
+ 228 00a4 04F10108 		add	r8, r4, #1
+ 229              	.LVL31:
+  86:Src/irremote/ir_NEC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], NEC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 230              		.loc 1 86 0
+ 231 00a8 2B69     		ldr	r3, [r5, #16]
+ 232 00aa 53F82800 		ldr	r0, [r3, r8, lsl #2]
+ 233 00ae 40F29A61 		movw	r1, #1690
+ 234 00b2 FFF7FEFF 		bl	MATCH_SPACE
+ 235              	.LVL32:
+ 236 00b6 0028     		cmp	r0, #0
+ 237 00b8 DFD0     		beq	.L12
+  86:Src/irremote/ir_NEC.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], NEC_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 238              		.loc 1 86 0 is_stmt 0 discriminator 1
+ 239 00ba 7600     		lsls	r6, r6, #1
+ARM GAS  /tmp/cct0dzmL.s 			page 7
+
+
+ 240              	.LVL33:
+ 241 00bc 46F00106 		orr	r6, r6, #1
+ 242              	.LVL34:
+ 243 00c0 E4E7     		b	.L13
+ 244              	.LVL35:
+ 245              	.L23:
+ 246              	.LBE2:
+  90:Src/irremote/ir_NEC.c **** 	}
+  91:Src/irremote/ir_NEC.c **** 
+  92:Src/irremote/ir_NEC.c **** 	// Success
+  93:Src/irremote/ir_NEC.c **** 	results->bits        = NEC_BITS;
+ 247              		.loc 1 93 0 is_stmt 1
+ 248 00c2 2023     		movs	r3, #32
+ 249 00c4 EB60     		str	r3, [r5, #12]
+  94:Src/irremote/ir_NEC.c **** 	results->value       = data;
+ 250              		.loc 1 94 0
+ 251 00c6 AE60     		str	r6, [r5, #8]
+  95:Src/irremote/ir_NEC.c **** 	results->decode_type = NEC;
+ 252              		.loc 1 95 0
+ 253 00c8 0323     		movs	r3, #3
+ 254 00ca 2B70     		strb	r3, [r5]
+  96:Src/irremote/ir_NEC.c **** 
+  97:Src/irremote/ir_NEC.c ****     return TRUE;
+ 255              		.loc 1 97 0
+ 256 00cc 0120     		movs	r0, #1
+ 257 00ce BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 258              	.LVL36:
+ 259              	.L15:
+  59:Src/irremote/ir_NEC.c **** 	offset++;
+ 260              		.loc 1 59 0
+ 261 00d2 0020     		movs	r0, #0
+ 262 00d4 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 263              	.LVL37:
+ 264              	.L17:
+  77:Src/irremote/ir_NEC.c **** 	offset++;
+ 265              		.loc 1 77 0
+ 266 00d8 0020     		movs	r0, #0
+ 267 00da BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 268              	.LVL38:
+ 269              	.L18:
+ 270              	.LBB3:
+  83:Src/irremote/ir_NEC.c **** 		offset++;
+ 271              		.loc 1 83 0
+ 272 00de 0020     		movs	r0, #0
+ 273 00e0 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 274              	.LVL39:
+ 275              	.L19:
+  88:Src/irremote/ir_NEC.c **** 		offset++;
+ 276              		.loc 1 88 0
+ 277 00e4 0020     		movs	r0, #0
+ 278              	.LBE3:
+  98:Src/irremote/ir_NEC.c **** }
+ 279              		.loc 1 98 0
+ 280 00e6 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 281              	.LVL40:
+ 282              	.L25:
+ 283 00ea 00BF     		.align	2
+ARM GAS  /tmp/cct0dzmL.s 			page 8
+
+
+ 284              	.L24:
+ 285 00ec 00000000 		.word	irparams
+ 286              		.cfi_endproc
+ 287              	.LFE65:
+ 289              		.text
+ 290              	.Letext0:
+ 291              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 292              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 293              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 294              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 295              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 296              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 297              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 298              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 299              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 300              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 301              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/cct0dzmL.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_NEC.c
+     /tmp/cct0dzmL.s:16     .text.sendNEC:0000000000000000 $t
+     /tmp/cct0dzmL.s:23     .text.sendNEC:0000000000000000 sendNEC
+     /tmp/cct0dzmL.s:103    .text.decodeNEC:0000000000000000 $t
+     /tmp/cct0dzmL.s:110    .text.decodeNEC:0000000000000000 decodeNEC
+     /tmp/cct0dzmL.s:285    .text.decodeNEC:00000000000000ec $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE
+irparams

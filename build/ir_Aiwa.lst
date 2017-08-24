@@ -1,0 +1,474 @@
+ARM GAS  /tmp/ccfXNrGJ.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ir_Aiwa.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.sendAiwaRCT501,"ax",%progbits
+  16              		.align	1
+  17              		.global	sendAiwaRCT501
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	sendAiwaRCT501:
+  24              	.LFB64:
+  25              		.file 1 "Src/irremote/ir_Aiwa.c"
+   1:Src/irremote/ir_Aiwa.c **** #include "IRremote.h"
+   2:Src/irremote/ir_Aiwa.c **** #include "IRremoteInt.h"
+   3:Src/irremote/ir_Aiwa.c **** 
+   4:Src/irremote/ir_Aiwa.c **** //==============================================================================
+   5:Src/irremote/ir_Aiwa.c **** //                         AAA   IIIII  W   W   AAA
+   6:Src/irremote/ir_Aiwa.c **** //                        A   A    I    W   W  A   A
+   7:Src/irremote/ir_Aiwa.c **** //                        AAAAA    I    W W W  AAAAA
+   8:Src/irremote/ir_Aiwa.c **** //                        A   A    I    W W W  A   A
+   9:Src/irremote/ir_Aiwa.c **** //                        A   A  IIIII   WWW   A   A
+  10:Src/irremote/ir_Aiwa.c **** //==============================================================================
+  11:Src/irremote/ir_Aiwa.c **** 
+  12:Src/irremote/ir_Aiwa.c **** // Based off the RC-T501 RCU
+  13:Src/irremote/ir_Aiwa.c **** // Lirc file http://lirc.sourceforge.net/remotes/aiwa/RC-T501
+  14:Src/irremote/ir_Aiwa.c **** 
+  15:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_HZ            38
+  16:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_BITS          15
+  17:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_PRE_BITS      26
+  18:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_POST_BITS      1
+  19:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_SUM_BITS    (AIWA_RC_T501_PRE_BITS + AIWA_RC_T501_BITS + AIWA_RC_T501_POST_BIT
+  20:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_HDR_MARK    8800
+  21:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_HDR_SPACE   4500
+  22:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_BIT_MARK     500
+  23:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_ONE_SPACE    600
+  24:Src/irremote/ir_Aiwa.c **** #define AIWA_RC_T501_ZERO_SPACE  1700
+  25:Src/irremote/ir_Aiwa.c **** 
+  26:Src/irremote/ir_Aiwa.c **** //+=============================================================================
+  27:Src/irremote/ir_Aiwa.c **** #if SEND_AIWA_RC_T501
+  28:Src/irremote/ir_Aiwa.c **** void  sendAiwaRCT501 (int code)
+  29:Src/irremote/ir_Aiwa.c **** {
+  26              		.loc 1 29 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccfXNrGJ.s 			page 2
+
+
+  30              	.LVL0:
+  31 0000 38B5     		push	{r3, r4, r5, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 16
+  34              		.cfi_offset 3, -16
+  35              		.cfi_offset 4, -12
+  36              		.cfi_offset 5, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0546     		mov	r5, r0
+  39              	.LVL1:
+  30:Src/irremote/ir_Aiwa.c **** 	unsigned long  pre = 0x0227EEC0;  // 26-bits
+  31:Src/irremote/ir_Aiwa.c **** 
+  32:Src/irremote/ir_Aiwa.c **** 	// Set IR carrier frequency
+  33:Src/irremote/ir_Aiwa.c ****     irsend_enableIROut(AIWA_RC_T501_HZ);
+  40              		.loc 1 33 0
+  41 0004 2620     		movs	r0, #38
+  42              	.LVL2:
+  43 0006 FFF7FEFF 		bl	irsend_enableIROut
+  44              	.LVL3:
+  34:Src/irremote/ir_Aiwa.c **** 
+  35:Src/irremote/ir_Aiwa.c **** 	// Header
+  36:Src/irremote/ir_Aiwa.c ****     irsend_mark(AIWA_RC_T501_HDR_MARK);
+  45              		.loc 1 36 0
+  46 000a 42F26020 		movw	r0, #8800
+  47 000e FFF7FEFF 		bl	irsend_mark
+  48              	.LVL4:
+  37:Src/irremote/ir_Aiwa.c ****     irsend_space(AIWA_RC_T501_HDR_SPACE);
+  49              		.loc 1 37 0
+  50 0012 41F29410 		movw	r0, #4500
+  51 0016 FFF7FEFF 		bl	irsend_space
+  52              	.LVL5:
+  38:Src/irremote/ir_Aiwa.c **** 
+  39:Src/irremote/ir_Aiwa.c **** 	// Send "pre" data
+  40:Src/irremote/ir_Aiwa.c ****     unsigned long  mask;
+  41:Src/irremote/ir_Aiwa.c ****     for (mask = 1UL << (26 - 1);  mask;  mask >>= 1) {
+  53              		.loc 1 41 0
+  54 001a 4FF00074 		mov	r4, #33554432
+  55 001e 04E0     		b	.L2
+  56              	.LVL6:
+  57              	.L3:
+  42:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+  43:Src/irremote/ir_Aiwa.c ****         if (pre & mask)  irsend_space(AIWA_RC_T501_ONE_SPACE) ;
+  44:Src/irremote/ir_Aiwa.c ****         else             irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+  58              		.loc 1 44 0
+  59 0020 40F2A460 		movw	r0, #1700
+  60 0024 FFF7FEFF 		bl	irsend_space
+  61              	.LVL7:
+  62              	.L4:
+  41:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+  63              		.loc 1 41 0 discriminator 2
+  64 0028 6408     		lsrs	r4, r4, #1
+  65              	.LVL8:
+  66              	.L2:
+  41:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+  67              		.loc 1 41 0 is_stmt 0 discriminator 1
+  68 002a 5CB1     		cbz	r4, .L11
+  42:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+ARM GAS  /tmp/ccfXNrGJ.s 			page 3
+
+
+  69              		.loc 1 42 0 is_stmt 1
+  70 002c 4FF4FA70 		mov	r0, #500
+  71 0030 FFF7FEFF 		bl	irsend_mark
+  72              	.LVL9:
+  43:Src/irremote/ir_Aiwa.c ****         else             irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+  73              		.loc 1 43 0
+  74 0034 164B     		ldr	r3, .L14
+  75 0036 1C42     		tst	r4, r3
+  76 0038 F2D0     		beq	.L3
+  43:Src/irremote/ir_Aiwa.c ****         else             irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+  77              		.loc 1 43 0 is_stmt 0 discriminator 1
+  78 003a 4FF41670 		mov	r0, #600
+  79 003e FFF7FEFF 		bl	irsend_space
+  80              	.LVL10:
+  81 0042 F1E7     		b	.L4
+  82              	.L11:
+  45:Src/irremote/ir_Aiwa.c **** 	}
+  46:Src/irremote/ir_Aiwa.c **** 
+  47:Src/irremote/ir_Aiwa.c **** //-v- THIS CODE LOOKS LIKE IT MIGHT BE WRONG - CHECK!
+  48:Src/irremote/ir_Aiwa.c **** //    it only send 15bits and ignores the top bit
+  49:Src/irremote/ir_Aiwa.c **** //    then uses TOPBIT which is 0x80000000 to check the bit code
+  50:Src/irremote/ir_Aiwa.c **** //    I suspect TOPBIT should be changed to 0x00008000
+  51:Src/irremote/ir_Aiwa.c **** 
+  52:Src/irremote/ir_Aiwa.c **** 	// Skip first code bit
+  53:Src/irremote/ir_Aiwa.c **** 	code <<= 1;
+  83              		.loc 1 53 0 is_stmt 1
+  84 0044 6C00     		lsls	r4, r5, #1
+  85              	.LVL11:
+  54:Src/irremote/ir_Aiwa.c **** 	// Send code
+  55:Src/irremote/ir_Aiwa.c ****     int  i;
+  56:Src/irremote/ir_Aiwa.c ****     for (i = 0;  i < 15;  i++) {
+  86              		.loc 1 56 0
+  87 0046 0025     		movs	r5, #0
+  88 0048 05E0     		b	.L6
+  89              	.LVL12:
+  90              	.L13:
+  57:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+  58:Src/irremote/ir_Aiwa.c ****         if (code & 0x80000000)  irsend_space(AIWA_RC_T501_ONE_SPACE) ;
+  91              		.loc 1 58 0 discriminator 1
+  92 004a 4FF41670 		mov	r0, #600
+  93 004e FFF7FEFF 		bl	irsend_space
+  94              	.LVL13:
+  95              	.L8:
+  59:Src/irremote/ir_Aiwa.c ****         else                    irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+  60:Src/irremote/ir_Aiwa.c **** 		code <<= 1;
+  96              		.loc 1 60 0 discriminator 2
+  97 0052 6400     		lsls	r4, r4, #1
+  98              	.LVL14:
+  56:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+  99              		.loc 1 56 0 discriminator 2
+ 100 0054 0135     		adds	r5, r5, #1
+ 101              	.LVL15:
+ 102              	.L6:
+  56:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+ 103              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 104 0056 0E2D     		cmp	r5, #14
+ 105 0058 0ADC     		bgt	.L12
+ARM GAS  /tmp/ccfXNrGJ.s 			page 4
+
+
+  57:Src/irremote/ir_Aiwa.c ****         irsend_mark(AIWA_RC_T501_BIT_MARK);
+ 106              		.loc 1 57 0 is_stmt 1
+ 107 005a 4FF4FA70 		mov	r0, #500
+ 108 005e FFF7FEFF 		bl	irsend_mark
+ 109              	.LVL16:
+  58:Src/irremote/ir_Aiwa.c ****         else                    irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+ 110              		.loc 1 58 0
+ 111 0062 002C     		cmp	r4, #0
+ 112 0064 F1DB     		blt	.L13
+  59:Src/irremote/ir_Aiwa.c ****         else                    irsend_space(AIWA_RC_T501_ZERO_SPACE) ;
+ 113              		.loc 1 59 0
+ 114 0066 40F2A460 		movw	r0, #1700
+ 115 006a FFF7FEFF 		bl	irsend_space
+ 116              	.LVL17:
+ 117 006e F0E7     		b	.L8
+ 118              	.L12:
+  61:Src/irremote/ir_Aiwa.c **** 	}
+  62:Src/irremote/ir_Aiwa.c **** 
+  63:Src/irremote/ir_Aiwa.c **** //-^- THIS CODE LOOKS LIKE IT MIGHT BE WRONG - CHECK!
+  64:Src/irremote/ir_Aiwa.c **** 
+  65:Src/irremote/ir_Aiwa.c **** 	// POST-DATA, 1 bit, 0x0
+  66:Src/irremote/ir_Aiwa.c ****     irsend_mark(AIWA_RC_T501_BIT_MARK);
+ 119              		.loc 1 66 0
+ 120 0070 4FF4FA70 		mov	r0, #500
+ 121 0074 FFF7FEFF 		bl	irsend_mark
+ 122              	.LVL18:
+  67:Src/irremote/ir_Aiwa.c ****     irsend_space(AIWA_RC_T501_ZERO_SPACE);
+ 123              		.loc 1 67 0
+ 124 0078 40F2A460 		movw	r0, #1700
+ 125 007c FFF7FEFF 		bl	irsend_space
+ 126              	.LVL19:
+  68:Src/irremote/ir_Aiwa.c **** 
+  69:Src/irremote/ir_Aiwa.c ****     irsend_mark(AIWA_RC_T501_BIT_MARK);
+ 127              		.loc 1 69 0
+ 128 0080 4FF4FA70 		mov	r0, #500
+ 129 0084 FFF7FEFF 		bl	irsend_mark
+ 130              	.LVL20:
+  70:Src/irremote/ir_Aiwa.c ****     irsend_space(0);
+ 131              		.loc 1 70 0
+ 132 0088 0020     		movs	r0, #0
+ 133 008a FFF7FEFF 		bl	irsend_space
+ 134              	.LVL21:
+ 135 008e 38BD     		pop	{r3, r4, r5, pc}
+ 136              	.LVL22:
+ 137              	.L15:
+ 138              		.align	2
+ 139              	.L14:
+ 140 0090 C0EE2702 		.word	36171456
+ 141              		.cfi_endproc
+ 142              	.LFE64:
+ 144              		.section	.text.decodeAiwaRCT501,"ax",%progbits
+ 145              		.align	1
+ 146              		.global	decodeAiwaRCT501
+ 147              		.syntax unified
+ 148              		.thumb
+ 149              		.thumb_func
+ 150              		.fpu softvfp
+ARM GAS  /tmp/ccfXNrGJ.s 			page 5
+
+
+ 152              	decodeAiwaRCT501:
+ 153              	.LFB65:
+  71:Src/irremote/ir_Aiwa.c **** }
+  72:Src/irremote/ir_Aiwa.c **** #endif
+  73:Src/irremote/ir_Aiwa.c **** 
+  74:Src/irremote/ir_Aiwa.c **** //+=============================================================================
+  75:Src/irremote/ir_Aiwa.c **** #if DECODE_AIWA_RC_T501
+  76:Src/irremote/ir_Aiwa.c **** unsigned char  decodeAiwaRCT501 (struct decode_results *results)
+  77:Src/irremote/ir_Aiwa.c **** {
+ 154              		.loc 1 77 0
+ 155              		.cfi_startproc
+ 156              		@ args = 0, pretend = 0, frame = 0
+ 157              		@ frame_needed = 0, uses_anonymous_args = 0
+ 158              	.LVL23:
+ 159 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 160              	.LCFI1:
+ 161              		.cfi_def_cfa_offset 24
+ 162              		.cfi_offset 3, -24
+ 163              		.cfi_offset 4, -20
+ 164              		.cfi_offset 5, -16
+ 165              		.cfi_offset 6, -12
+ 166              		.cfi_offset 7, -8
+ 167              		.cfi_offset 14, -4
+ 168              	.LVL24:
+  78:Src/irremote/ir_Aiwa.c **** 	int  data   = 0;
+  79:Src/irremote/ir_Aiwa.c **** 	int  offset = 1;
+  80:Src/irremote/ir_Aiwa.c **** 
+  81:Src/irremote/ir_Aiwa.c **** 	// Check SIZE
+  82:Src/irremote/ir_Aiwa.c ****     if (irparams.rawlen < 2 * (AIWA_RC_T501_SUM_BITS) + 4)  return FALSE ;
+ 169              		.loc 1 82 0
+ 170 0002 294B     		ldr	r3, .L32
+ 171 0004 DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 172 0006 DBB2     		uxtb	r3, r3
+ 173 0008 572B     		cmp	r3, #87
+ 174 000a 01D8     		bhi	.L30
+ 175 000c 0020     		movs	r0, #0
+ 176              	.LVL25:
+ 177 000e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 178              	.LVL26:
+ 179              	.L30:
+ 180 0010 0546     		mov	r5, r0
+  83:Src/irremote/ir_Aiwa.c **** 
+  84:Src/irremote/ir_Aiwa.c **** 	// Check HDR Mark/Space
+  85:Src/irremote/ir_Aiwa.c ****     if (!MATCH_MARK (results->rawbuf[offset++], AIWA_RC_T501_HDR_MARK ))  return FALSE ;
+ 181              		.loc 1 85 0
+ 182 0012 0369     		ldr	r3, [r0, #16]
+ 183              	.LVL27:
+ 184 0014 5868     		ldr	r0, [r3, #4]
+ 185              	.LVL28:
+ 186 0016 42F26021 		movw	r1, #8800
+ 187 001a FFF7FEFF 		bl	MATCH_MARK
+ 188              	.LVL29:
+ 189 001e 08B9     		cbnz	r0, .L31
+ 190 0020 0020     		movs	r0, #0
+ 191 0022 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 192              	.LVL30:
+ 193              	.L31:
+ARM GAS  /tmp/ccfXNrGJ.s 			page 6
+
+
+  86:Src/irremote/ir_Aiwa.c ****     if (!MATCH_SPACE(results->rawbuf[offset++], AIWA_RC_T501_HDR_SPACE))  return FALSE ;
+ 194              		.loc 1 86 0
+ 195 0024 2B69     		ldr	r3, [r5, #16]
+ 196              	.LVL31:
+ 197 0026 9868     		ldr	r0, [r3, #8]
+ 198 0028 41F29411 		movw	r1, #4500
+ 199 002c FFF7FEFF 		bl	MATCH_SPACE
+ 200              	.LVL32:
+ 201 0030 A0B3     		cbz	r0, .L25
+ 202 0032 1D24     		movs	r4, #29
+ 203 0034 0026     		movs	r6, #0
+ 204 0036 09E0     		b	.L18
+ 205              	.LVL33:
+ 206              	.L19:
+  87:Src/irremote/ir_Aiwa.c **** 
+  88:Src/irremote/ir_Aiwa.c **** 	offset += 26;  // skip pre-data - optional
+  89:Src/irremote/ir_Aiwa.c **** 	while(offset < irparams.rawlen - 4) {
+  90:Src/irremote/ir_Aiwa.c **** 		if (MATCH_MARK(results->rawbuf[offset], AIWA_RC_T501_BIT_MARK))  offset++ ;
+  91:Src/irremote/ir_Aiwa.c ****         else                                                             return FALSE ;
+  92:Src/irremote/ir_Aiwa.c **** 
+  93:Src/irremote/ir_Aiwa.c **** 		// ONE & ZERO
+  94:Src/irremote/ir_Aiwa.c **** 		if      (MATCH_SPACE(results->rawbuf[offset], AIWA_RC_T501_ONE_SPACE))   data = (data << 1) | 1 ;
+  95:Src/irremote/ir_Aiwa.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], AIWA_RC_T501_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 207              		.loc 1 95 0
+ 208 0038 2B69     		ldr	r3, [r5, #16]
+ 209 003a 53F82700 		ldr	r0, [r3, r7, lsl #2]
+ 210 003e 40F2A461 		movw	r1, #1700
+ 211 0042 FFF7FEFF 		bl	MATCH_SPACE
+ 212              	.LVL34:
+ 213 0046 E0B1     		cbz	r0, .L27
+ 214              		.loc 1 95 0 is_stmt 0 discriminator 1
+ 215 0048 7600     		lsls	r6, r6, #1
+ 216              	.LVL35:
+ 217              	.L20:
+  96:Src/irremote/ir_Aiwa.c **** 		else                                                                     break ;  // End of one &
+  97:Src/irremote/ir_Aiwa.c **** 		offset++;
+ 218              		.loc 1 97 0 is_stmt 1
+ 219 004a 0234     		adds	r4, r4, #2
+ 220              	.LVL36:
+ 221              	.L18:
+  89:Src/irremote/ir_Aiwa.c **** 		if (MATCH_MARK(results->rawbuf[offset], AIWA_RC_T501_BIT_MARK))  offset++ ;
+ 222              		.loc 1 89 0
+ 223 004c 164B     		ldr	r3, .L32
+ 224 004e DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 225 0050 043B     		subs	r3, r3, #4
+ 226 0052 9C42     		cmp	r4, r3
+ 227 0054 16DA     		bge	.L21
+  90:Src/irremote/ir_Aiwa.c ****         else                                                             return FALSE ;
+ 228              		.loc 1 90 0
+ 229 0056 2B69     		ldr	r3, [r5, #16]
+ 230 0058 53F82400 		ldr	r0, [r3, r4, lsl #2]
+ 231 005c 4FF4FA71 		mov	r1, #500
+ 232 0060 FFF7FEFF 		bl	MATCH_MARK
+ 233              	.LVL37:
+ 234 0064 E0B1     		cbz	r0, .L26
+  90:Src/irremote/ir_Aiwa.c ****         else                                                             return FALSE ;
+ 235              		.loc 1 90 0 is_stmt 0 discriminator 1
+ARM GAS  /tmp/ccfXNrGJ.s 			page 7
+
+
+ 236 0066 671C     		adds	r7, r4, #1
+ 237              	.LVL38:
+  94:Src/irremote/ir_Aiwa.c **** 		else if (MATCH_SPACE(results->rawbuf[offset], AIWA_RC_T501_ZERO_SPACE))  data = (data << 1) | 0 ;
+ 238              		.loc 1 94 0 is_stmt 1 discriminator 1
+ 239 0068 2B69     		ldr	r3, [r5, #16]
+ 240 006a 53F82700 		ldr	r0, [r3, r7, lsl #2]
+ 241 006e 4FF41671 		mov	r1, #600
+ 242 0072 FFF7FEFF 		bl	MATCH_SPACE
+ 243              	.LVL39:
+ 244 0076 0028     		cmp	r0, #0
+ 245 0078 DED0     		beq	.L19
+ 246 007a 7600     		lsls	r6, r6, #1
+ 247              	.LVL40:
+ 248 007c 46F00106 		orr	r6, r6, #1
+ 249              	.LVL41:
+ 250 0080 E3E7     		b	.L20
+ 251              	.L27:
+  90:Src/irremote/ir_Aiwa.c ****         else                                                             return FALSE ;
+ 252              		.loc 1 90 0
+ 253 0082 3C46     		mov	r4, r7
+ 254              	.LVL42:
+ 255              	.L21:
+  98:Src/irremote/ir_Aiwa.c **** 	}
+  99:Src/irremote/ir_Aiwa.c **** 
+ 100:Src/irremote/ir_Aiwa.c **** 	results->bits = (offset - 1) / 2;
+ 256              		.loc 1 100 0
+ 257 0084 013C     		subs	r4, r4, #1
+ 258              	.LVL43:
+ 259 0086 04EBD474 		add	r4, r4, r4, lsr #31
+ 260              	.LVL44:
+ 261 008a 6410     		asrs	r4, r4, #1
+ 262 008c EC60     		str	r4, [r5, #12]
+ 101:Src/irremote/ir_Aiwa.c ****     if (results->bits < 42)  return FALSE ;
+ 263              		.loc 1 101 0
+ 264 008e 292C     		cmp	r4, #41
+ 265 0090 08DD     		ble	.L28
+ 102:Src/irremote/ir_Aiwa.c **** 
+ 103:Src/irremote/ir_Aiwa.c **** 	results->value       = data;
+ 266              		.loc 1 103 0
+ 267 0092 AE60     		str	r6, [r5, #8]
+ 104:Src/irremote/ir_Aiwa.c **** 	results->decode_type = AIWA_RC_T501;
+ 268              		.loc 1 104 0
+ 269 0094 0923     		movs	r3, #9
+ 270 0096 2B70     		strb	r3, [r5]
+ 105:Src/irremote/ir_Aiwa.c ****     return TRUE;
+ 271              		.loc 1 105 0
+ 272 0098 0120     		movs	r0, #1
+ 273 009a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 274              	.LVL45:
+ 275              	.L25:
+  86:Src/irremote/ir_Aiwa.c **** 
+ 276              		.loc 1 86 0
+ 277 009c 0020     		movs	r0, #0
+ 278 009e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 279              	.LVL46:
+ 280              	.L26:
+  91:Src/irremote/ir_Aiwa.c **** 
+ARM GAS  /tmp/ccfXNrGJ.s 			page 8
+
+
+ 281              		.loc 1 91 0
+ 282 00a0 0020     		movs	r0, #0
+ 283 00a2 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 284              	.LVL47:
+ 285              	.L28:
+ 101:Src/irremote/ir_Aiwa.c **** 
+ 286              		.loc 1 101 0
+ 287 00a4 0020     		movs	r0, #0
+ 106:Src/irremote/ir_Aiwa.c **** }
+ 288              		.loc 1 106 0
+ 289 00a6 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 290              	.LVL48:
+ 291              	.L33:
+ 292              		.align	2
+ 293              	.L32:
+ 294 00a8 00000000 		.word	irparams
+ 295              		.cfi_endproc
+ 296              	.LFE65:
+ 298              		.text
+ 299              	.Letext0:
+ 300              		.file 2 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 301              		.file 3 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 302              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 303              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 304              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 305              		.file 7 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 306              		.file 8 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 307              		.file 9 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 308              		.file 10 "/home/mpitiot/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 309              		.file 11 "Inc/irremote/IRremoteInt.h"
+ 310              		.file 12 "Inc/irremote/IRremote.h"
+ARM GAS  /tmp/ccfXNrGJ.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ir_Aiwa.c
+     /tmp/ccfXNrGJ.s:16     .text.sendAiwaRCT501:0000000000000000 $t
+     /tmp/ccfXNrGJ.s:23     .text.sendAiwaRCT501:0000000000000000 sendAiwaRCT501
+     /tmp/ccfXNrGJ.s:140    .text.sendAiwaRCT501:0000000000000090 $d
+     /tmp/ccfXNrGJ.s:145    .text.decodeAiwaRCT501:0000000000000000 $t
+     /tmp/ccfXNrGJ.s:152    .text.decodeAiwaRCT501:0000000000000000 decodeAiwaRCT501
+     /tmp/ccfXNrGJ.s:294    .text.decodeAiwaRCT501:00000000000000a8 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+irsend_enableIROut
+irsend_mark
+irsend_space
+MATCH_MARK
+MATCH_SPACE
+irparams
